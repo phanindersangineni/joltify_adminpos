@@ -1,0 +1,112 @@
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.3);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .receipt {
+    max-width: 350px;
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+  }
+  
+  .header {
+    text-align: center;
+    font-size: 18px;
+  }
+  
+  .header .address {
+    font-size: 12px;
+    font-weight: normal;
+  }
+  
+  .order-info,
+  .items,
+  .totals,
+  .footer {
+    margin-top: 10px;
+    font-size: 12px;
+  }
+  
+  .order-info {
+    border-top: 1px dotted #000;
+    border-bottom: 1px dotted #000;
+    padding: 10px;
+  }
+  
+  .order-info p {
+    margin-bottom: 0;
+  }
+  
+  .totals {
+    font-size: 14px;
+  }
+  
+  .totals p {
+    margin-bottom: 0;
+  }
+  
+  .token {
+    text-align: center;
+    font-size: 18px;
+    border-bottom: 1px dotted #000;
+    padding: 10px;
+  }
+  
+  .btn-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    font-size: 12px;
+    border-bottom: 1px solid #ccc;
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .btn1 {
+    font-size: 12px;
+    background: rgb(248, 69, 69);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  
+  .btn-print1 {
+    background: rgb(3, 182, 3);
+  }
+  
+  .btn1:hover {
+    background: red;
+    color: #fff;
+  }
+  
+  .btn1-print:hover {
+    background: green;
+  }
+  
+  .table {
+    width: 100%;
+  }
+  
+  .table th {
+    font-weight: bold;
+    text-align: left;
+    border-bottom: 1px solid #000;
+  }
+  
+  .text-muted {
+    color: #6c757d;
+  }
+  
