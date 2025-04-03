@@ -144,7 +144,8 @@ const AddItemComponent = ({ closeActionItem, item, openInvoiceAction,quantity })
        }
        console.log(cartitems);
        //window.dispatchEvent(new Event("cartlist"));
-        openInvoiceAction(cartitems);
+       //closeActionItem('additems');
+        openInvoiceAction('additems');
 
     }
 

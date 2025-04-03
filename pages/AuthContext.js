@@ -9,12 +9,13 @@ export const AuthProvider = ({ children }) => {
     const [accessToken, setAccessToken] = useState(null);
     const [authloading, setLoading] = useState(true);
     const [cartitems, setCartItems] = useState(null);
-
+    
     // Load user from localStorage on initial render
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
         const storedToken = localStorage.getItem("accessToken");
         const storedCarditems = JSON.parse(localStorage.getItem("cartitems"));
+        
 
         if (storedUser && storedToken) {
             setUser(storedUser);
@@ -40,6 +41,7 @@ export const AuthProvider = ({ children }) => {
         setAccessToken(null);
         localStorage.removeItem("user");
         localStorage.removeItem("accessToken");
+        localStorage.removeItem("cartitems");
     };
 
     const cart = (cartData) => {

@@ -1,13 +1,18 @@
 import axios from "axios";
 import { useState } from "react";
-
-const AddCustomerComponent = (user, accessToken ,customerAction) => {
+import Swal from "sweetalert2";
+export const DEV = process.env.NEXT_PUBLIC_API_URL;
+const AddCustomerComponent = ({user, accessToken ,customerAction,closeCustomerAction}) => {
     const [formData, setFormData] = useState({
         name: "",
         phone: "",
     });
 
     const [errors, setErrors] = useState({});
+
+    const closemodal =(id)=>{
+        closeCustomerAction(id);
+    }
 
     const validateForm = () => {
         let newErrors = {};
@@ -45,17 +50,23 @@ const AddCustomerComponent = (user, accessToken ,customerAction) => {
                 name:formData.name,
                 phone:formData.phone
               }
-              response = await axios.post(`${DEV}/joltify/customers`, addcutomerdata, { headers });
+             const response = await axios.post(`${DEV}/joltify/customers`, addcutomerdata, { headers });
      
 
               if (response.data.data.id) {
-                alert("Customer added successfully!");
+               // alert("Customer added successfully!");
                 customerAction(formData);
                 setFormData({ name: "", phone: "" }); // Reset form
 
                 
             } else {
-                alert("Failed to add customer.");
+                
+                Swal.fire({
+                    text: 'Failed to add customer please check if mobile number already exists',
+                    icon: 'failure',
+                    timer: 2000, // The alert will automatically close after 3 seconds
+                    showConfirmButton: false, // Hide the confirm button
+                  });
             }
         } catch (error) {
             console.error("Error:", error);
@@ -97,7 +108,8 @@ const AddCustomerComponent = (user, accessToken ,customerAction) => {
                     <button type="submit" className="btn btn-primary me-2">
                         <i className="bi bi-check-circle-fill"></i> Save
                     </button>
-                    <button type="reset" className="btn btn-outline-secondary closePopup" onClick={() => closemodal("addcustomer")}>
+                    <button type="reset" className="btn btn-outline-secondary closePopup"
+                     onClick={() => closemodal("addcustomer")}>
                         <i className="bi bi-x-circle-fill"></i> Close
                     </button>
                 </div>

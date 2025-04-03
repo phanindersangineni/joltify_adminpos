@@ -18,6 +18,12 @@ const PosComponent  =({user, accessToken}) =>{
     const [selectedCustomer, setSelectedCustomer] = useState("");
     const [selectedTable, setSelectedTable] = useState("");
     const [loading, setLoading] = useState(true);
+    const [orderType, setOrderType] = useState("Dine-In"); // Default selection
+    const[paymentamount,setPaymentamount] =useState(null);
+
+    const handleOrderChange = (event) => {
+        setOrderType(event.target.value); // Update selected value
+    };
     useEffect(() => {
         loaditems();
         
@@ -49,6 +55,11 @@ const PosComponent  =({user, accessToken}) =>{
         setQuantity(Date.now()); // Updates quantity on every call
     };
 
+    function paymentpopup(data) {
+        setPaymentamount(data);
+        document.getElementById('payment').style.display = "flex";
+    }
+
     function openPopup(popupId) {
        
         document.getElementById(popupId).style.display = "flex";
@@ -65,8 +76,8 @@ const PosComponent  =({user, accessToken}) =>{
         document.getElementById(popupId).style.display ='none';
     }
 
-    const showinvoice =() =>{
-
+    const showinvoice =(popupId) =>{
+        document.getElementById(popupId).style.display ='none';
     }
 
     useEffect(() => {
@@ -83,7 +94,7 @@ const PosComponent  =({user, accessToken}) =>{
                   };
                // const response = await fetch(`http://localhost:3000/customers/search?name=${searchTerm}`);
                 //const data = await response.json();
-                const response = await axios.get(`${DEV}/joltify/customers/search/${searchTerm}`, { headers });
+                const response = await axios.get(`${DEV}/joltify/customers/search/${searchTerm}/${user.user_id}`, { headers });
                setCustomers(response.data.data);
             } catch (error) {
                 console.error("Error fetching customers:", error);
@@ -111,6 +122,12 @@ const PosComponent  =({user, accessToken}) =>{
         setCustomers(arr);
         setSelectedCustomer(data.phone);
 
+    }
+
+    const resetCustomer =() =>{
+        setSelectedCustomer('');
+        setCustomers([]);
+        setSearchTerm('');
     }
 
     return(
@@ -181,22 +198,32 @@ const PosComponent  =({user, accessToken}) =>{
             </select>
        
 
-                    <a href="#" class="btn btn-primary" onClick={()=>openPopup('addcustomer')}
-                     id="openaddcustomer"><i class="bi bi-plus-circle"></i> Add</a>
+                    
                 </div>
                 <div class="token">
-                    <input type="text" name="" id="" placeholder="Token No" />
+                <a href="#" class="btn btn-primary" onClick={()=>openPopup('addcustomer')}
+                     id="openaddcustomer"><i class="bi bi-plus-circle"></i> Add Customer</a>
+                
+                &nbsp;<a href="#" class="btn btn-primary" onClick={resetCustomer}
+                     id="openaddcustomer"><i class="bi bi-minus-circle"></i> Reset</a>
+               
                 </div>
                 <div class="order">
                     <div class="order-container">
                         <label class="order-label">Select Order Type</label>
                         <div class="order-type">
                             <label class="order-option">
-                                <input type="radio" name="order" checked />
+                                <input type="radio" name="order" 
+                                 value="Dine-In"
+                                 checked={orderType === "Dine-In"}
+                                 onChange={handleOrderChange}  />
                                 <span>Dine-In</span>
                             </label>
                             <label class="order-option">
-                                <input type="radio" name="order" />
+                                <input type="radio" name="order"
+                                 value="Takeaway"
+                                 checked={orderType === "Takeaway"}
+                                 onChange={handleOrderChange}  />
                                 <span>Takeaway</span>
                             </label>
                         </div>
@@ -212,7 +239,10 @@ const PosComponent  =({user, accessToken}) =>{
                 </div>
 
 
-               <Invoice  paymentAction ={openPopup} closePayAction={closemodal}/>
+               <Invoice selectedCustomer ={selectedCustomer} selectedTable ={selectedTable}
+                user ={user} accessToken ={accessToken} orderType={orderType}
+                  paymentAction ={paymentpopup} closePayAction={closemodal}
+               quantity ={quantity}/>
 
 
 
@@ -223,7 +253,7 @@ const PosComponent  =({user, accessToken}) =>{
 
         <div class="add-customer  " id="addcustomer" >
            <AddCustomerComponent customerAction={selectcutomerdropdown} 
-            user ={user} accessToken ={accessToken}/>
+            user ={user} closeCustomerAction={closemodal}  accessToken ={accessToken}/>
         </div>
 
 
@@ -233,7 +263,10 @@ const PosComponent  =({user, accessToken}) =>{
         </div>
 
         <div class="payment-modal" id="payment">
-            <AddPaymentComponent openReceiptAction={openPopup}/>
+            <AddPaymentComponent paymentamount ={paymentamount}
+            selectedCustomer ={selectedCustomer} selectedTable ={selectedTable}
+                user ={user} accessToken ={accessToken} orderType={orderType}
+             openReceiptAction={openPopup}/>
         </div>
 
 
