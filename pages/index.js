@@ -1,11 +1,14 @@
+
 import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import { useAuth } from "./AuthContext";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Home() {
+  const { login } = useAuth();
   const router = useRouter();
   // State for form fields and errors
   const [formData, setFormData] = useState({
@@ -61,6 +64,8 @@ export default function Home() {
           
           await localStorage.setItem('posaccesstoken', resdata.accessToken);
           document.cookie = `postoken=${resdata.accessToken}; path=/;`;
+         console.log(resdata.user);
+          login(resdata.user, resdata.accessToken);
           
           Swal.fire({
             text: 'Login Successful',

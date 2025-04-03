@@ -4,13 +4,23 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import NavBarComponent from "./components/NavBarComponent";
 import SidebarComponent from "./components/SideBarComponent";
-import TableComponent from "./components/TableComponent";
 import CategoryComponent from "./components/CategoryComponent";
-
+import { useAuth } from "./AuthContext";
+import { useRouter } from "next/router";
 
 const Category = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true); // Default sidebar open
+  const { user,accessToken, authloading } = useAuth();
+  const router = useRouter();
 
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authloading && !user) {
+      router.push("/");
+    }
+  }, [authloading, user, router]);
+
+  // Load Bootstrap JS dynamically
   useEffect(() => {
     import("bootstrap/dist/js/bootstrap.bundle.min.js").catch((err) =>
       console.error("Failed to load Bootstrap:", err)
@@ -19,9 +29,11 @@ const Category = () => {
 
   // Function to toggle sidebar
   const toggleSidebar = () => {
-    
     setSidebarOpen(!isSidebarOpen);
   };
+
+  // Show loading state while checking authentication
+  if (authloading) return <p>Loading...</p>;
 
   return (
     <>
@@ -45,10 +57,14 @@ const Category = () => {
         <link rel="stylesheet" href="/assets/css/styles.css" />
       </Head>
 
-      {/* Navbar & Sidebar */}
-      <NavBarComponent toggleSidebar={toggleSidebar} />
-      <SidebarComponent isOpen={isSidebarOpen} />
-       <CategoryComponent/>
+      {/* Render components only if authenticated */}
+      {user && (
+        <>
+          <NavBarComponent toggleSidebar={toggleSidebar} />
+          <SidebarComponent isOpen={isSidebarOpen} />
+          <CategoryComponent user ={user} accessToken ={accessToken} />
+        </>
+      )}
     </>
   );
 };

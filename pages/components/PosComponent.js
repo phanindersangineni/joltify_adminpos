@@ -5,29 +5,37 @@ import Invoice from "./InvoiceComponent"
 import Menu from "./MenuComponent"
 import RecieptComponent from "./RecieptComponent";
 import axios from "axios";
+import AddCustomerComponent from "./AddCustomerComponent";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
-const PosComponent  =() =>{
+const PosComponent  =({user, accessToken}) =>{
 
     const[itemlist,setItemList] =useState([]);
     const[singleitem,setSingleItem] =useState(null);
-
+    const[tablelist,setTableList] =useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [customers, setCustomers] = useState([]);
+    const [selectedCustomer, setSelectedCustomer] = useState("");
+    const [selectedTable, setSelectedTable] = useState("");
+    const [loading, setLoading] = useState(true);
     useEffect(() => {
         loaditems();
+        
       }, []);
     
       const loaditems = async() =>{
-        let accesstoken = await localStorage.getItem("posaccesstoken");
-        const user = await localStorage.getItem('posuser');
-      
+       
         const headers = {
           "content-type": "application/json",
           "X-Content-Type-Options": "nosniff",
           "X-Frame-Options": "SAMEORIGIN",
-          token: accesstoken,
+          token: accessToken,
         };
-        const response = await axios.get(`${DEV}/joltify/items/search/${user.id}`, { headers });
+        const response = await axios.get(`${DEV}/joltify/items/search/${user.user_id}`, { headers });
         setItemList(response.data.data);
+
+        const response1 = await axios.get(`${DEV}/joltify/tableinfo/search/${user.user_id}`, { headers });
+        setTableList(response1.data.data);
       }
 
 
@@ -35,7 +43,11 @@ const PosComponent  =() =>{
 
     }
     
+    const [quantity, setQuantity] = useState(Date.now()); // Initialize with timestamp
 
+    const updateQuantity = () => {
+        setQuantity(Date.now()); // Updates quantity on every call
+    };
 
     function openPopup(popupId) {
        
@@ -44,12 +56,61 @@ const PosComponent  =() =>{
 
     function openItemPopup(popupId,item) {
         setSingleItem(item);
+        setQuantity(Date.now());
        
         document.getElementById(popupId).style.display = "flex";
     }
 
     function closemodal(popupId) {
         document.getElementById(popupId).style.display ='none';
+    }
+
+    const showinvoice =() =>{
+
+    }
+
+    useEffect(() => {
+        const fetchCustomers = async () => {
+            if (!searchTerm) return; // Don't fetch if empty
+
+            setLoading(true);
+            try {
+                const headers = {
+                    "content-type": "application/json",
+                    "X-Content-Type-Options": "nosniff",
+                    "X-Frame-Options": "SAMEORIGIN",
+                    token: accessToken,
+                  };
+               // const response = await fetch(`http://localhost:3000/customers/search?name=${searchTerm}`);
+                //const data = await response.json();
+                const response = await axios.get(`${DEV}/joltify/customers/search/${searchTerm}`, { headers });
+               setCustomers(response.data.data);
+            } catch (error) {
+                console.error("Error fetching customers:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const delayDebounce = setTimeout(() => {
+            fetchCustomers();
+        }, 500); // Debounce to prevent too many API calls
+
+        return () => clearTimeout(delayDebounce);
+    }, [searchTerm]);
+
+    const selectcutomerdropdown= (data)=>{
+
+        const setdata ={
+            name:data.name,
+            mobileno:data.phone
+
+        }
+        let arr =[];
+        arr.push(setdata);
+        setCustomers(arr);
+        setSelectedCustomer(data.phone);
+
     }
 
     return(
@@ -66,19 +127,23 @@ const PosComponent  =() =>{
                     </button>
                 </div>
 
-               <Menu categoryClickAction ={filteritembycategory}/>
+               <Menu user ={user} accessToken ={accessToken} categoryClickAction ={filteritembycategory}/>
 
                 <div class="menu-container pos-items">
                  
-                {itemlist.map((item, index) => ( 
+                {itemlist?.map((item, index) => ( 
                     <div key={index} class="items-card">
-                        <div class="item-image">
-                            <img src ={`${DEV}/items/files/${item.image}`} alt="Chicken Dumplings" />
-                        </div>
+                      {item?.image &&  <div class="item-image">
+                            <img src ={`${DEV}/items/files/${item?.image}`} alt="Chicken Dumplings" />
+                        </div> }
+
+                        {!item?.image &&  <div class="item-image">
+                            <img src ="/assets/images/chicken_dumplings-thumb.png" alt="Chicken Dumplings" />
+                        </div> }  
                         <div class="item-info">
-                            <h6>{item.name}</h6>
+                            <h6>{item?.name}</h6>
                             <div class="buttons">
-                                <span class="price">$ {item.price}</span>
+                                <span class="price">$ {item?.price}</span>
                                 <a href="#" onClick={()=>openItemPopup('additems',item)} class="add-button" id="openadditems"><i class="bi bi-cart4"></i> Add</a>
                             </div>
                         </div>
@@ -94,17 +159,28 @@ const PosComponent  =() =>{
 
             <div class="pop-right">
                 <div class="first">
-                    <select class="form-select">
-                        <option>Search Customer</option>
-                        <option>John Doe</option>
-                        <option>Walking Customer</option>
-                        <option>Will Smith</option>
-                        <option>Kiron Khan</option>
-                        <option>Farha Israt</option>
-                        <option>Rohim Miya</option>
-                        <option>Sakib Duronto</option>
-                        <option>Maruf Khan</option>
-                    </select>
+            
+            <input
+                type="text"
+                className="form-control"
+                placeholder="Search Customer"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <select className="form-select"
+             value={selectedCustomer} // Set selected value
+             onChange={(e) => setSelectedCustomer(e.target.value)}>
+                <option>Customer</option>
+                {loading ? (
+                    <option>Loading...</option>
+                ) : (
+                    customers.map((customer) => (
+                        <option key={customer.mobileno}>{customer.name}</option>
+                    ))
+                )}
+            </select>
+       
+
                     <a href="#" class="btn btn-primary" onClick={()=>openPopup('addcustomer')}
                      id="openaddcustomer"><i class="bi bi-plus-circle"></i> Add</a>
                 </div>
@@ -124,11 +200,13 @@ const PosComponent  =() =>{
                                 <span>Takeaway</span>
                             </label>
                         </div>
-                        <select class="select-table form-select">
+                        <select class="select-table form-select"
+                        value={selectedTable}
+                        onChange={(e) => setSelectedTable(e.target.value)}>
                             <option>Select Table</option>
-                            <option>Table 1</option>
-                            <option>Table 2</option>
-                            <option>Table 3</option>
+                            {tablelist.map((table, index) => (  
+                            <><option  key={index} value={table.tableno}>{table.name}</option></>
+                            ))}
                         </select>
                     </div>
                 </div>
@@ -144,37 +222,14 @@ const PosComponent  =() =>{
 
 
         <div class="add-customer  " id="addcustomer" >
-            <div class="popup-add-customer">
-                <div class="header">
-                    <h5>Customers</h5>
-                </div>
-                <form>
-                    <div class="form-group">
-                        <label>Name *</label>
-                        <input type="text" required />
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Phone *</label>
-                        <input type="number" required/>
-                    </div>
-                   
-                    <div class="col-md-12 mt-3 d-flex align-items-center  buttons">
-                        <button type="submit" class="btn btn-primary me-2">
-                            <i class="bi bi-check-circle-fill"></i> Save
-                        </button>
-                        <button onClick={()=>closemodal('addcustomer')} type="reset" class="btn btn-outline-secondary closePopup">
-                            <i class="bi bi-x-circle-fill"></i> Close
-                        </button>
-
-                    </div>
-                </form>
-            </div>
+           <AddCustomerComponent customerAction={selectcutomerdropdown} 
+            user ={user} accessToken ={accessToken}/>
         </div>
 
 
         <div class="add-items" id="additems">
-           <AddItemComponent  closeActionItem={closemodal} item ={singleitem}/>
+           <AddItemComponent  closeActionItem={closemodal} openInvoiceAction ={showinvoice}
+            item ={singleitem} quantity ={quantity}/>
         </div>
 
         <div class="payment-modal" id="payment">
@@ -183,7 +238,7 @@ const PosComponent  =() =>{
 
 
         <div class="receiptpopup" id="receipt">
-           <RecieptComponent/>
+           <RecieptComponent user ={user} accessToken ={accessToken}/>
         </div>
     </section>
         </>

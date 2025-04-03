@@ -1,25 +1,35 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ItemViewComponent from "./ItemViewComponent";
 import axios from "axios";
 import Swal from "sweetalert2";
+
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
-const CategoryComponent = () => {
+const CategoryComponent = ({user,accessToken}) => {
   const itemsPerPage = 10;
   const [itemlist, setItemlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showitemdetail,setShowitemDetails] =useState(false);
   const [itemid,setItemId] =useState(null);
-
+  const fileInputRef = useRef(null);
+  const[filedata,setFileData] =useState(null);
+  const [itempic,setItemPic] =useState(null);
+  const isFirstLoad = useRef(true);
+  
   useEffect(() => {
-    loaditems();
+    if (isFirstLoad.current) {
+      loaditems();
+      isFirstLoad.current = false;
+    }
   }, []);
 
   useEffect(() => {
       
     const reloaditems = async () => {
       
-      loaditems();
+      if (!isFirstLoad.current) {
+        loaditems();
+      }
     
     };
 
@@ -31,15 +41,15 @@ const CategoryComponent = () => {
     setItemId(null);
     setLoading(true);
     setItemlist([]);
-    let accesstoken = await localStorage.getItem("posaccesstoken");
+      
     const headers = {
       "content-type": "application/json",
       "X-Content-Type-Options": "nosniff",
       "X-Frame-Options": "SAMEORIGIN",
-      token: accesstoken,
+      token: accessToken,
     };
-
-    const response = await axios.get(`${DEV}/joltify/categories/search`, { headers });
+     console.log(user);
+    const response = await axios.get(`${DEV}/joltify/categories/search/${user?.user_id}`, { headers });
     setItemlist(response.data.data);
     setLoading(false);
   };
@@ -100,10 +110,24 @@ const CategoryComponent = () => {
   const validateForm = () => {
     let newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required.";
-   
+     
+    if(filedata ==null && itempic==null )newErrors.filename ="Please upload file"
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  const handleImageClick = () => {
+    if (fileInputRef.current?.files.length) return; // Prevent reopening the file dialog if a file is selected
+
+
+  fileInputRef.current.click();
+  };
+  const handleFileChange = async (event) => {
+    event.preventDefault();
+    const file = event.target.files[0]
+    setFileData(file);
+  }
 
   // Handle Submit
   const handleSubmit = async (e) => {
@@ -114,19 +138,40 @@ const CategoryComponent = () => {
     console.log("Submitting Form Data:", formData);
 
     try {
-     
+      let savefile ="";
+      let newFileName="";
+      if(itempic ==null){
+        let itemNameModified = formData.name.replace(/ /g, '_');
+         newFileName =`${itemNameModified}_${new Date().getTime()}`;
+
+      const newFile = new File([filedata], newFileName, { type: filedata.type });
+      const formData1 = new FormData();
+      formData1.append("file", newFile);  
+      const fileresponse = await axios.post(`${DEV}/items/upload`, formData1, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if(fileresponse.data.status =='success'){
+        savefile ="success";
+      }else{
+        savefile ="failure"
+      }
+    }else{
+      savefile ="success";
+      newFileName =itempic;
+    }
+      if (savefile =='success') {
       const saveredata ={
         name:formData.name,
         status:formData.status,
-       
+        image:newFileName,
+        createdby:user.user_id
       }
       // Simulating API call
-      let accesstoken = await localStorage.getItem("posaccesstoken");
       const headers = {
         "content-type": "application/json",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "SAMEORIGIN",
-        token: accesstoken,
+        token: accessToken,
       };
       console.log(saveredata);
      let response ={};
@@ -174,6 +219,8 @@ const CategoryComponent = () => {
           showConfirmButton: false, // Hide the confirm button
         });
       }
+
+    }
       
     } catch (error) {
       console.error("Submission failed:", error);
@@ -228,6 +275,7 @@ const CategoryComponent = () => {
   const edititem = async(item) =>{
     setItemId(item.id);
     setFormData(item);
+    setItemPic(`${DEV}/items/files/${item.image}`);
     const openButton = document.getElementById("editForm");
     const closeButton = document.getElementById("closeForm");
     const formContainer = document.getElementById("formContainer");
@@ -292,7 +340,7 @@ const CategoryComponent = () => {
                 </ul>
               </div>
 
-              <button class="add-item btn btn-primary" id="openForm"><i class="bi bi-plus-circle"></i> Add Item</button>
+              <button class="add-item btn btn-primary" id="openForm"><i class="bi bi-plus-circle"></i> Add Category</button>
             </div>
           </div>
 
@@ -313,6 +361,15 @@ const CategoryComponent = () => {
                 </div>
 
                 <div className="row mb-3">
+                <div class="col-md-6">
+                                <label class="form-label">Image</label>
+                                <input type="file" ref={fileInputRef} 
+                                 accept="image/*"
+                                onChange={handleFileChange}
+                                 class="form-control" />
+                                {errors.filename && <small className="text-danger">{errors.filename}</small>}
+                  
+                            </div>
                   
                   <div className="col-md-6">
                     <label className="form-label">Status</label><br />
@@ -321,9 +378,15 @@ const CategoryComponent = () => {
                   </div>
                 </div>
 
+               {itempic && <div className="image-container">
+
+                <img src={itempic} alt="slider" />
+                </div>  }
+                
+               <br/>
                
                 <div className="col-md-12 d-flex align-items-end">
-                  <button type="submit" className="btn btn-primary me-2">
+                  <button onClick={handleSubmit} type="submit" className="btn btn-primary me-2">
                     <i className="bi bi-check-circle"></i> Submit
                   </button>
                   <button type="reset" className="btn btn-outline-secondary" onClick={() => setFormData({
@@ -358,8 +421,8 @@ const CategoryComponent = () => {
                     <label>STATUS</label>
                     <select name="status" className="form-select custom-select" value={filters.status} onChange={handleFilterChange}>
                       <option value="">--</option>
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
                     </select>
                   </div>
                   <div className="col-md-12 my-4 d-flex align-items-end">

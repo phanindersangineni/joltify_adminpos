@@ -1,26 +1,36 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ItemViewComponent from "./ItemViewComponent";
 import axios from "axios";
 import Swal from "sweetalert2";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
-const RestaurantComponent = () => {
+const RestaurantComponent = ({ user, accessToken }) => {
   const itemsPerPage = 10;
   const [itemlist, setItemlist] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showitemdetail,setShowitemDetails] =useState(false);
-  const [itemid,setItemId] =useState(null);
-
+  const [showitemdetail, setShowitemDetails] = useState(false);
+  const [itemid, setItemId] = useState(null);
+  const isFirstLoad = useRef(true);
+  const fileInputRef = useRef(null);
+  const [filedata, setFileData] = useState(null);
+  const[normalimg,setNormalimage] =useState(null);
+  const [itempic, setItemPic] = useState(null);
+  console.log(itemlist);
   useEffect(() => {
-    loaditems();
+    if (isFirstLoad.current) {
+      loaditems();
+      isFirstLoad.current = false;
+    }
   }, []);
 
   useEffect(() => {
-      
+
     const reloaditems = async () => {
-      
-      loaditems();
-    
+
+      if (!isFirstLoad.current) {
+        loaditems();
+      }
+
     };
 
     window.addEventListener("reloadlist", reloaditems);
@@ -30,25 +40,37 @@ const RestaurantComponent = () => {
   const loaditems = async () => {
     setItemId(null);
     setLoading(true);
-    setItemlist([]);
-    let accesstoken = await localStorage.getItem("posaccesstoken");
+
     const headers = {
       "content-type": "application/json",
       "X-Content-Type-Options": "nosniff",
       "X-Frame-Options": "SAMEORIGIN",
-      token: accesstoken,
+      token: accessToken,
     };
 
-    const response = await axios.get(`${DEV}/joltify/restaurant/search`, { headers });
-    setItemlist(response.data.data);
+    try {
+      const response = await axios.get(`${DEV}/joltify/restaurants/search`, { headers });
+      if (response.data) {
+        setItemlist(response.data);
+        
+      } else {
+        setItemlist([]); // Ensure it's always an array
+      }
+    } catch (error) {
+      console.error("Failed to load items:", error);
+      setItemlist([]); // Handle errors gracefully
+    }
+
     setLoading(false);
   };
+  console.log(itemlist);
+  //name, mobileno, email,image, address, description
   const [filters, setFilters] = useState({
     name: "",
-    contactno: "",
-    contactperson:"",
-    email:"",
-    address:"",
+    mobileno: "",
+    email: "",
+    address: "",
+    description: "",
     status: ""
   });
 
@@ -66,23 +88,21 @@ const RestaurantComponent = () => {
     let filtered = itemlist.filter((item) => {
       return (
         (filters.name ? item.name.toLowerCase().includes(filters.name.toLowerCase()) : true) &&
-        (filters.contactperson ? item.contactperson.toLowerCase().includes(filters.contactperson.toLowerCase()) : true) &&
+        (filters.mobileno ? item.mobileno == filters.mobileno : true) &&
         (filters.email ? item.email == filters.email : true) &&
-        (filters.contactno ? item.contactno == filters.contactno : true) &&
         (filters.status ? item.status === filters.status : true)
       );
     });
 
     setItemlist(filtered);
   };
-
+  console.log(itemlist);
   // Reset Filter
   const handleReset = () => {
     setFilters({
       name: null,
-      contactperson: null,
-      contactno:null,
-      email:null,
+      mobileno: null,
+      email: null,
       status: null,
     });
 
@@ -91,13 +111,12 @@ const RestaurantComponent = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    contactno: "",
-    contactperson:"",
-    email:"",
-    address:"",
+    mobileno: "",
+    email: "",
+    address: "",
     status: "active",
-    description:""
-   
+    description: ""
+
   });
 
   const [errors, setErrors] = useState({});
@@ -115,15 +134,22 @@ const RestaurantComponent = () => {
   const validateForm = () => {
     let newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required.";
-    if (!formData.contactperson.trim()) newErrors.contactperson = "person name is required.";
-    if (!formData.contactno.trim()) newErrors.contactno = "contact number is required.";
+    if (!formData.address.trim()) newErrors.address = "address  is required.";
+    if (!formData.mobileno.trim()) newErrors.mobileno = "contact number is required.";
     if (!formData.email.trim()) newErrors.email = "Email is required.";
-    if (!formData.address.trim()) newErrors.address = "Address is required.";
-   
-   
+    if (!formData.description.trim()) newErrors.description = "Description is required.";
+    if (filedata == null && itempic == null) newErrors.filename = "Please upload file"
+
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  const handleFileChange = async (event) => {
+    event.preventDefault();
+    const file = event.target.files[0]
+    setFileData(file);
+  }
 
   // Handle Submit
   const handleSubmit = async (e) => {
@@ -132,76 +158,98 @@ const RestaurantComponent = () => {
     if (!validateForm()) return;
 
     console.log("Submitting Form Data:", formData);
+    let savefile = "";
+    let newFileName = "";
+    if (itempic == null) {
+      let itemNameModified = formData.name.replace(/ /g, '_');
+      newFileName = `${itemNameModified}_${new Date().getTime()}`;
 
-    try {
-            
-      const saveredata ={
-        name:formData.name,
-        contactperson:formData.contactperson,
-        mobileno:formData.contactno,
-        email:formData.email,
-        address:formData.address,
-        status:formData.status,
-        description:formData.description
-       
+      const newFile = new File([filedata], newFileName, { type: filedata.type });
+      const formData1 = new FormData();
+      formData1.append("file", newFile);
+      const fileresponse = await axios.post(`${DEV}/items/upload`, formData1, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      if (fileresponse.data.status == 'success') {
+        savefile = "success";
+      } else {
+        savefile = "failure"
       }
-      // Simulating API call
-      let accesstoken = await localStorage.getItem("posaccesstoken");
-      const headers = {
-        "content-type": "application/json",
-        "X-Content-Type-Options": "nosniff",
-        "X-Frame-Options": "SAMEORIGIN",
-        token: accesstoken,
-      };
-      console.log(saveredata);
-     let response ={};
-     
-      if(itemid ==null){
-  
-      response = await axios.post(`${DEV}/joltify/tableinfo`,saveredata, { headers });
-      }else{
-         response = await axios.put(`${DEV}/joltify/tableinfo/${itemid}`,saveredata, { headers });
-       
-      }
-      if(response.data.data.id){
-        Swal.fire({
-          text: 'Data added Successful',
-          icon: 'success',
-          timer: 2000, // The alert will automatically close after 3 seconds
-          showConfirmButton: false, // Hide the confirm button
-        });
-        loaditems();
-       // const openButton = document.getElementById("openForm");
-        //const closeButton = document.getElementById("closeForm");
-        const formContainer = document.getElementById("formContainer");
+    } else {
+      savefile = "success";
+      newFileName = normalimg;
+    }
+    savefile = "success";
+    if (savefile == 'success') {
+      try {
 
-        formContainer.classList.remove("show");
-    
-      }else if(response.data.data =='SUCCESS'){
-        Swal.fire({
-          text: 'Data updated Successful',
-          icon: 'success',
-          timer: 2000, // The alert will automatically close after 3 seconds
-          showConfirmButton: false, // Hide the confirm button
-        });
-        loaditems();
-       // const openButton = document.getElementById("openForm");
-        //const closeButton = document.getElementById("closeForm");
-        const formContainer = document.getElementById("formContainer");
+        const saveredata = {
+          name: formData.name,
+          mobileno: formData.mobileno,
+          email: formData.email,
+          address: formData.address,
+          status: formData.status,
+          description: formData.description,
+          image: newFileName
 
-        formContainer.classList.remove("show");
+        }
+        // Simulating API call
+        const headers = {
+          "content-type": "application/json",
+          "X-Content-Type-Options": "nosniff",
+          "X-Frame-Options": "SAMEORIGIN",
+          token: accessToken,
+        };
+        //console.log(saveredata);
+        let response = {};
+
+        if (itemid == null) {
+
+          response = await axios.post(`${DEV}/joltify/restaurants`, saveredata, { headers });
+        } else {
+          response = await axios.put(`${DEV}/joltify/restaurants/${itemid}`, saveredata, { headers });
+
+        }
+        if (response.data.data.id) {
+          Swal.fire({
+            text: 'Data added Successful',
+            icon: 'success',
+            timer: 2000, // The alert will automatically close after 3 seconds
+            showConfirmButton: false, // Hide the confirm button
+          });
+          loaditems();
+          // const openButton = document.getElementById("openForm");
+          //const closeButton = document.getElementById("closeForm");
+          const formContainer = document.getElementById("formContainer");
+
+          formContainer.classList.remove("show");
+
+        } else if (response.data.data == 'SUCCESS') {
+          Swal.fire({
+            text: 'Data updated Successful',
+            icon: 'success',
+            timer: 2000, // The alert will automatically close after 3 seconds
+            showConfirmButton: false, // Hide the confirm button
+          });
+          loaditems();
+          // const openButton = document.getElementById("openForm");
+          //const closeButton = document.getElementById("closeForm");
+          const formContainer = document.getElementById("formContainer");
+
+          formContainer.classList.remove("show");
+        }
+        else {
+          Swal.fire({
+            text: 'Failed to add Data',
+            icon: 'success',
+            timer: 2000, // The alert will automatically close after 3 seconds
+            showConfirmButton: false, // Hide the confirm button
+          });
+        }
+
+      } catch (error) {
+        console.error("Submission failed:", error);
       }
-      else{
-        Swal.fire({
-          text: 'Failed to add Data',
-          icon: 'success',
-          timer: 2000, // The alert will automatically close after 3 seconds
-          showConfirmButton: false, // Hide the confirm button
-        });
-      }
-      
-    } catch (error) {
-      console.error("Submission failed:", error);
     }
   };
 
@@ -234,24 +282,30 @@ const RestaurantComponent = () => {
   }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
-
-  const totalPages = Math.ceil(itemlist.length / itemsPerPage);
+  let totalPages = 0;
+  if (itemlist) {
+    totalPages = Math.ceil(itemlist?.length / itemsPerPage);
+  }
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const displayedItems = itemlist.slice(startIndex, startIndex + itemsPerPage);
+
+  const displayedItems = itemlist?.slice(startIndex, startIndex + itemsPerPage);
 
   const changePage = (page) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
-  const[singleitem,setSingleItem] =useState(null);
-  const viewItems = async(item) =>{
-    
+  const [singleitem, setSingleItem] = useState(null);
+  const viewItems = async (item) => {
+
     setSingleItem(item);
     setShowitemDetails(true);
   }
 
-  const edititem = async(item) =>{
+  const edititem = async (item) => {
     setItemId(item.id);
+    setNormalimage(item.image);
+    setItemPic(`${DEV}/items/files/${item.image}`);
+   
     setFormData(item);
     const openButton = document.getElementById("editForm");
     const closeButton = document.getElementById("closeForm");
@@ -262,7 +316,7 @@ const RestaurantComponent = () => {
 
   return (
     <>
-    {loading && (
+      {loading && (
         <div className="loading-overlay">
           <div className="spinner"></div>
         </div>
@@ -317,7 +371,7 @@ const RestaurantComponent = () => {
                 </ul>
               </div>
 
-              <button class="add-item btn btn-primary" id="openForm"><i class="bi bi-plus-circle"></i> Add Item</button>
+              <button class="add-item btn btn-primary" id="openForm"><i class="bi bi-plus-circle"></i> Add Restaurant</button>
             </div>
           </div>
 
@@ -335,34 +389,30 @@ const RestaurantComponent = () => {
                     {errors.name && <small className="text-danger">{errors.name}</small>}
                   </div>
                   <div className="col-md-6">
-                    <label className="form-label">Contact Person *</label>
-                    <input type="text" name="contactperson" className="form-control"
-                     value={formData.contactperson} onChange={handleChange} />
-                     {errors.contactperson && <small className="text-danger">{errors.contactperson}</small>}
+                    <label className="form-label">Contact Number *</label>
+                    <input type="text" name="mobileno" className="form-control"
+                      value={formData.mobileno} onChange={handleChange} />
+                    {errors.mobileno && <small className="text-danger">{errors.mobileno}</small>}
                   </div>
                 </div>
                 <div className="row my-3">
-                  <div className="col-md-6">
-                    <label className="form-label">Contact Number *</label>
-                    <input type="text" name="contactno" className="form-control" value={formData.contactno} onChange={handleChange} />
-                    {errors.contactno && <small className="text-danger">{errors.contactno}</small>}
-                  </div>
+
                   <div className="col-md-6">
                     <label className="form-label">Contact Email *</label>
                     <input type="text" name="email" className="form-control"
-                     value={formData.email} onChange={handleChange} />
-                     {errors.email && <small className="text-danger">{errors.email}</small>}
+                      value={formData.email} onChange={handleChange} />
+                    {errors.email && <small className="text-danger">{errors.email}</small>}
                   </div>
                 </div>
 
                 <div className="row mb-3">
-                <div className="col-md-6">
+                  <div className="col-md-6">
                     <label className="form-label">Contact Address *</label>
-                  <textarea name="contactaddress" className="form-control" value={formData.contactaddress} onChange={handleChange}></textarea>
+                    <textarea name="address" className="form-control" value={formData.address} onChange={handleChange}></textarea>
 
-                    {errors.contactaddress && <small className="text-danger">{errors.contactaddress}</small>}
+                    {errors.address && <small className="text-danger">{errors.address}</small>}
                   </div>
-                  
+
                   <div className="col-md-6">
                     <label className="form-label">Status</label><br />
                     <input type="radio" name="status" value="active" checked={formData.status === "active"} onChange={handleChange} /> Active
@@ -371,30 +421,44 @@ const RestaurantComponent = () => {
                 </div>
 
                 <div className="row mb-3">
-                <div className="col-md-6">
+                  <div class="col-md-6">
+                    <label class="form-label">Image</label>
+                    <input type="file" ref={fileInputRef}
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      class="form-control" />
+                    {errors.filename && <small className="text-danger">{errors.filename}</small>}
+
+                  </div> 
+                  {itempic && <> <br /><div className="image-container">
+
+                    <img src={itempic} alt="slider" />
+                  </div> <br /></>} 
+                  <div className="col-md-6">
                     <label className="form-label">Description</label>
-                  <textarea name="description" 
-                  className="form-control" value={formData.description} 
-                  onChange={handleChange}></textarea>
+                    <textarea name="description"
+                      className="form-control" value={formData.description}
+                      onChange={handleChange}></textarea>
+                    {errors.description && <small className="text-danger">{errors.description}</small>}
 
                   </div>
-                  
-                  
+
+
                 </div>
 
-               
+
                 <div className="col-md-12 d-flex align-items-end">
                   <button type="submit" className="btn btn-primary me-2">
                     <i className="bi bi-check-circle"></i> Submit
                   </button>
                   <button type="reset" className="btn btn-outline-secondary" onClick={() => setFormData({
                     name: "",
-                    contactperson: "",
-                    contactno:"",
-                    email:"",
-                    contactaddress:"",
-                    status: "active"
-                   
+                    contactno: "",
+                    email: "",
+                    address: "",
+                    status: "active",
+                    description: ""
+
                   })}>
                     <i className="bi bi-x-circle"></i> Clear
                   </button>
@@ -413,12 +477,19 @@ const RestaurantComponent = () => {
                     <label>Restaurant Name</label>
                     <input type="text" name="name" className="form-control custom-input" placeholder="Enter name" value={filters.name} onChange={handleFilterChange} />
                   </div>
-                 
-                
+
+                  <div className="col-md-3">
+                    <label>Contact Number</label>
+                    <input type="text" name="mobileno"
+                      className="form-control custom-input"
+                      placeholder="Enter contact number" value={filters.mobileno} onChange={handleFilterChange} />
+                  </div>
+
+
                 </div>
 
                 <div className="row mt-3">
-                 
+
                   <div className="col-md-3">
                     <label>STATUS</label>
                     <select name="status" className="form-select custom-select" value={filters.status} onChange={handleFilterChange}>
@@ -446,7 +517,6 @@ const RestaurantComponent = () => {
             <thead>
               <tr>
                 <th>Retaurant Name</th>
-                <th>Contact Person</th>
                 <th>Contact Number</th>
                 <th>Contact Email</th>
                 <th>Address</th>
@@ -455,7 +525,7 @@ const RestaurantComponent = () => {
               </tr>
             </thead>
             <tbody>
-              {displayedItems.map((item, index) => (
+              {displayedItems?.map((item, index) => (
                 <tr key={index} className="hover:bg-gray-100">
                   <td className="border px-4 py-2">{item.name}</td>
                   <td className="border px-4 py-2">{item.mobileno}</td>
@@ -463,67 +533,64 @@ const RestaurantComponent = () => {
                   <td className="border px-4 py-2">{item.address}</td>
                   <td className="border px-4 py-2">{item.status}</td>
                   <td class="actions">
-                            <a onClick={()=>viewItems(item)} class="tooltip-container">
-                                <i class="fas fa-eye view"></i>
-                                <span class="tooltip-text">View</span>
-                            </a>
-                            <a onClick={()=>edititem(item)} id="editForm" class="tooltip-container">
-                                <i class="fas fa-edit edit"></i>
-                                <span class="tooltip-text">Edit</span>
-                            </a>
-                            <a class="tooltip-container">
-                                <i class="fas fa-trash delete"></i>
-                                <span class="tooltip-text">Delete</span>
-                            </a>
-                        </td>
+                    <a onClick={() => viewItems(item)} class="tooltip-container">
+                      <i class="fas fa-eye view"></i>
+                      <span class="tooltip-text">View</span>
+                    </a>
+                    <a onClick={() => edititem(item)} id="editForm" class="tooltip-container">
+                      <i class="fas fa-edit edit"></i>
+                      <span class="tooltip-text">Edit</span>
+                    </a>
+                    <a class="tooltip-container">
+                      <i class="fas fa-trash delete"></i>
+                      <span class="tooltip-text">Delete</span>
+                    </a>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
           <div class="table-footer">
-          <span class="add-content">
-          Showing {startIndex + 1} to{" "}
-          {Math.min(startIndex + itemsPerPage, itemlist.length)} of{" "}
-          {itemlist.length} entries
-        </span>
+            <span class="add-content">
+              Showing {startIndex + 1} to{" "}
+              {Math.min(startIndex + itemsPerPage, itemlist?.length)} of{" "}
+              {itemlist?.length} entries
+            </span>
             <div className="flex justify-between items-center mt-4">
-       
 
-        <div className="flex space-x-2">
-          <button
-            className={`px-3 py-1 border rounded ${
-              currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            onClick={() => changePage(currentPage - 1)}
-          >
-            &laquo;
-          </button>
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              className={`px-3 py-1 border rounded ${
-                currentPage === i + 1 ? "bg-blue-500 text-white" : ""
-              }`}
-              onClick={() => changePage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-          <button
-            className={`px-3 py-1 border rounded ${
-              currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            onClick={() => changePage(currentPage + 1)}
-          >
-            &raquo;
-          </button>
-        </div>
-      </div>
+
+              <div className="flex space-x-2">
+                <button
+                  className={`px-3 py-1 border rounded ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  onClick={() => changePage(currentPage - 1)}
+                >
+                  &laquo;
+                </button>
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    className={`px-3 py-1 border rounded ${currentPage === i + 1 ? "bg-blue-500 text-white" : ""
+                      }`}
+                    onClick={() => changePage(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  className={`px-3 py-1 border rounded ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  onClick={() => changePage(currentPage + 1)}
+                >
+                  &raquo;
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-    
+
     </>
   )
 }

@@ -29,6 +29,23 @@ const ItemViewComponent = ({singleitem}) => {
     }
   }, []);
 
+
+  useEffect(() => {
+
+    setItemPic(`${DEV}/items/files/${singleitem.image}`);
+    
+    if(singleitem.variants !=null){
+      setVarianList(singleitem.variants);
+      loadvariantlist(singleitem.variants);
+     
+    }
+    if(singleitem.extra !=null){
+      setExtraList(singleitem.extra);
+      
+     
+    }
+  }, [singleitem]);
+
   const [groupedVariants, setGroupedVariants] = useState({});
 
 const loadvariantlist = (objlist) => {
@@ -218,11 +235,20 @@ const loadvariantlist = (objlist) => {
         token: accesstoken,
       };
        let vr = singleitem.variants;
+       console.log(vr);
         if(vr !=null){
-        
-          vr = JSON.parse(singleitem.variants);
-        }else{
+         if(Array.isArray(singleitem.variants))
+         {
           vr =[];
+         }else{
+          vr = JSON.parse(singleitem.variants);
+         }
+        }else{
+          if(variantlist.length ==0){
+          vr =[];
+          }else{
+            vr =variantlist;
+          }
         }
         
         let obj ={
@@ -234,6 +260,7 @@ const loadvariantlist = (objlist) => {
         }
           
         vr.push(obj);
+        console.log(vr);
         setVarianList(vr);
         loadvariantlist(vr);
       const saveredata ={
@@ -328,12 +355,29 @@ const loadvariantlist = (objlist) => {
         "content-type": "application/json",
         token: accesstoken,
       };
-       let vr = singleitem.extra;
+       /*let vr = singleitem.extra;
         if(vr !=null){
         
           vr = JSON.parse(singleitem.extra);
         }else{
           vr =[];
+        }*/
+
+        let vr = singleitem.extra;
+       console.log(vr);
+        if(vr !=null){
+         if(Array.isArray(singleitem.extra))
+         {
+          vr =[];
+         }else{
+          vr = JSON.parse(singleitem.extra);
+         }
+        }else{
+          if(extralist.length ==0){
+          vr =[];
+          }else{
+            vr =extralist;
+          }
         }
         
         let obj ={

@@ -1,26 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ItemViewComponent from "./ItemViewComponent";
 import axios from "axios";
 import Swal from "sweetalert2";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
-const TableComponent = () => {
-  const itemsPerPage = 5;
+const TableComponent = ({ user, accessToken }) => {
+  const itemsPerPage = 10;
   const [itemlist, setItemlist] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showitemdetail,setShowitemDetails] =useState(false);
-  const [itemid,setItemId] =useState(null);
-
+  const [showitemdetail, setShowitemDetails] = useState(false);
+  const [itemid, setItemId] = useState(null);
+  const [itempic, setItemPic] = useState(null);
+  const isFirstLoad = useRef(true);
   useEffect(() => {
-    loaditems();
+    if (isFirstLoad.current) {
+      loaditems();
+      isFirstLoad.current = false;
+    }
   }, []);
 
   useEffect(() => {
-      
+
     const reloaditems = async () => {
-      
-      loaditems();
-    
+
+      if (!isFirstLoad.current) {
+        loaditems();
+      }
+
     };
 
     window.addEventListener("reloadlist", reloaditems);
@@ -31,21 +37,21 @@ const TableComponent = () => {
     setItemId(null);
     setLoading(true);
     setItemlist([]);
-    let accesstoken = await localStorage.getItem("posaccesstoken");
     const headers = {
       "content-type": "application/json",
       "X-Content-Type-Options": "nosniff",
       "X-Frame-Options": "SAMEORIGIN",
-      token: accesstoken,
+      token: accessToken,
     };
 
-    const response = await axios.get(`${DEV}/joltify/tableinfo/search`, { headers });
+    const response = await axios.get(`${DEV}/joltify/tableinfo/search/${user?.user_id}`, { headers });
     setItemlist(response.data.data);
     setLoading(false);
   };
   const [filters, setFilters] = useState({
     name: "",
-    size: "",
+    sizeinfo: "",
+    tableno: "",
     status: "",
   });
 
@@ -63,7 +69,8 @@ const TableComponent = () => {
     let filtered = itemlist.filter((item) => {
       return (
         (filters.name ? item.name.toLowerCase().includes(filters.name.toLowerCase()) : true) &&
-        (filters.size ? item.size == filters.size : true) &&
+        (filters.sizeinfo ? item.sizeinfo == filters.sizeinfo : true) &&
+        (filters.tableno ? item.tableno == filters.tableno : true) &&
         (filters.status ? item.status === filters.status : true)
       );
     });
@@ -75,8 +82,9 @@ const TableComponent = () => {
   const handleReset = () => {
     setFilters({
       name: null,
-      size: null,
+      sizeinfo: null,
       status: null,
+      tableno: null
     });
 
     setFilteredItems(items);
@@ -84,9 +92,10 @@ const TableComponent = () => {
 
   const [formData, setFormData] = useState({
     name: null,
-    size: null,
+    sizeinfo: null,
+    tableno: null,
     status: "active"
-   
+
   });
 
   const [errors, setErrors] = useState({});
@@ -104,8 +113,9 @@ const TableComponent = () => {
   const validateForm = () => {
     let newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required.";
-    if (!formData.size) newErrors.size = "Size is required.";
-   
+    if (!formData.sizeinfo) newErrors.sizeinfo = "Size is required.";
+    if (!formData.tableno) newErrors.tableno = "Table no is required.";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -119,32 +129,32 @@ const TableComponent = () => {
     console.log("Submitting Form Data:", formData);
 
     try {
-     
-      const saveredata ={
-        name:formData.name,
-        size:formData.price,
-        status:formData.status,
-       
+
+      const saveredata = {
+        name: formData.name,
+        sizeinfo: formData.sizeinfo,
+        status: formData.status,
+        tableno: formData.tableno,
+        createdby: user.user_id
       }
       // Simulating API call
-      let accesstoken = await localStorage.getItem("posaccesstoken");
       const headers = {
         "content-type": "application/json",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "SAMEORIGIN",
-        token: accesstoken,
+        token: accessToken,
       };
       console.log(saveredata);
-     let response ={};
-     
-      if(itemid ==null){
-  
-      response = await axios.post(`${DEV}/joltify/tableinfo`,saveredata, { headers });
-      }else{
-         response = await axios.put(`${DEV}/joltify/tableinfo/${itemid}`,saveredata, { headers });
-       
+      let response = {};
+
+      if (itemid == null) {
+
+        response = await axios.post(`${DEV}/joltify/tableinfo`, saveredata, { headers });
+      } else {
+        response = await axios.put(`${DEV}/joltify/tableinfo/${itemid}`, saveredata, { headers });
+
       }
-      if(response.data.data.id){
+      if (response.data.data.id) {
         Swal.fire({
           text: 'Table added Successful',
           icon: 'success',
@@ -152,13 +162,13 @@ const TableComponent = () => {
           showConfirmButton: false, // Hide the confirm button
         });
         loaditems();
-       // const openButton = document.getElementById("openForm");
+        // const openButton = document.getElementById("openForm");
         //const closeButton = document.getElementById("closeForm");
         const formContainer = document.getElementById("formContainer");
 
         formContainer.classList.remove("show");
-    
-      }else if(response.data.data =='SUCCESS'){
+
+      } else if (response.data.data == 'SUCCESS') {
         Swal.fire({
           text: 'Table updated Successful',
           icon: 'success',
@@ -166,13 +176,13 @@ const TableComponent = () => {
           showConfirmButton: false, // Hide the confirm button
         });
         loaditems();
-       // const openButton = document.getElementById("openForm");
+        // const openButton = document.getElementById("openForm");
         //const closeButton = document.getElementById("closeForm");
         const formContainer = document.getElementById("formContainer");
 
         formContainer.classList.remove("show");
       }
-      else{
+      else {
         Swal.fire({
           text: 'Failed to add Table',
           icon: 'success',
@@ -180,7 +190,7 @@ const TableComponent = () => {
           showConfirmButton: false, // Hide the confirm button
         });
       }
-      
+
     } catch (error) {
       console.error("Submission failed:", error);
     }
@@ -224,16 +234,17 @@ const TableComponent = () => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
-  const[singleitem,setSingleItem] =useState(null);
-  const viewItems = async(item) =>{
-    
+  const [singleitem, setSingleItem] = useState(null);
+  const viewItems = async (item) => {
+
     setSingleItem(item);
     setShowitemDetails(true);
   }
 
-  const edititem = async(item) =>{
+  const edititem = async (item) => {
     setItemId(item.id);
     setFormData(item);
+    setItemPic(item.image);
     const openButton = document.getElementById("editForm");
     const closeButton = document.getElementById("closeForm");
     const formContainer = document.getElementById("formContainer");
@@ -243,7 +254,7 @@ const TableComponent = () => {
 
   return (
     <>
-    {loading && (
+      {loading && (
         <div className="loading-overlay">
           <div className="spinner"></div>
         </div>
@@ -317,30 +328,40 @@ const TableComponent = () => {
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">Size *</label>
-                    <input type="number" name="size" className="form-control" value={formData.size} onChange={handleChange} />
-                    {errors.size && <small className="text-danger">{errors.size}</small>}
+                    <input type="number" name="sizeinfo" className="form-control" value={formData.sizeinfo} onChange={handleChange} />
+                    {errors.sizeinfo && <small className="text-danger">{errors.sizeinfo}</small>}
+                  </div>
+                  <div className="col-md-6">
+                    <label className="form-label">Tableno *</label>
+                    <input type="number" name="tableno" className="form-control" value={formData.tableno} onChange={handleChange} />
+                    {errors.tableno && <small className="text-danger">{errors.tableno}</small>}
                   </div>
                 </div>
 
                 <div className="row mb-3">
-                  
+
                   <div className="col-md-6">
                     <label className="form-label">Status</label><br />
                     <input type="radio" name="status" value="active" checked={formData.status === "active"} onChange={handleChange} /> Active
                     <input type="radio" name="status" value="inactive" checked={formData.status === "inactive"} onChange={handleChange} /> Inactive
                   </div>
                 </div>
+                {itempic && <div className="image-container">
 
-               
+                  <img src={itempic} alt="slider" />
+                </div>} <br />
+
+
                 <div className="col-md-12 d-flex align-items-end">
                   <button type="submit" className="btn btn-primary me-2">
                     <i className="bi bi-check-circle"></i> Submit
                   </button>
                   <button type="reset" className="btn btn-outline-secondary" onClick={() => setFormData({
                     name: "",
-                    size: "",
+                    sizeinfo: "",
+                    tableno: "",
                     status: "active"
-                   
+
                   })}>
                     <i className="bi bi-x-circle"></i> Clear
                   </button>
@@ -360,14 +381,18 @@ const TableComponent = () => {
                     <input type="text" name="name" className="form-control custom-input" placeholder="Enter name" value={filters.name} onChange={handleFilterChange} />
                   </div>
                   <div className="col-md-3">
-                    <label>Size</label>
-                    <input type="number" name="size" className="form-control custom-input" placeholder="Enter size" value={filters.size} onChange={handleFilterChange} />
+                    <label>Size Info</label>
+                    <input type="number" name="sizeinfo" className="form-control custom-input" placeholder="Enter size" value={filters.sizeinfo} onChange={handleFilterChange} />
                   </div>
-                
+                  <div className="col-md-3">
+                    <label>Table No</label>
+                    <input type="number" name="tableno" className="form-control custom-input" placeholder="Enter size" value={filters.tableno} onChange={handleFilterChange} />
+                  </div>
+
                 </div>
 
                 <div className="row mt-3">
-                 
+
                   <div className="col-md-3">
                     <label>STATUS</label>
                     <select name="status" className="form-select custom-select" value={filters.status} onChange={handleFilterChange}>
@@ -376,6 +401,8 @@ const TableComponent = () => {
                       <option value="Inactive">Inactive</option>
                     </select>
                   </div>
+
+
                   <div className="col-md-12 my-4 d-flex align-items-end">
                     <button type="submit" className="btn btn-search me-2">
                       <i className="bi bi-search"></i> Search
@@ -394,8 +421,9 @@ const TableComponent = () => {
           <table>
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Size</th>
+                <th>TableName</th>
+                <th>Table Size</th>
+                <th>Table No</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
@@ -404,70 +432,68 @@ const TableComponent = () => {
               {displayedItems.map((item, index) => (
                 <tr key={index} className="hover:bg-gray-100">
                   <td className="border px-4 py-2">{item.name}</td>
-                  <td className="border px-4 py-2">{item.size}</td>
+                  <td className="border px-4 py-2">{item.sizeinfo}</td>
+                  <td className="border px-4 py-2">{item.tableno}</td>
                   <td className="border px-4 py-2">{item.status}</td>
                   <td class="actions">
-                            <a onClick={()=>viewItems(item)} class="tooltip-container">
-                                <i class="fas fa-eye view"></i>
-                                <span class="tooltip-text">View</span>
-                            </a>
-                            <a onClick={()=>edititem(item)} id="editForm" class="tooltip-container">
-                                <i class="fas fa-edit edit"></i>
-                                <span class="tooltip-text">Edit</span>
-                            </a>
-                            <a class="tooltip-container">
-                                <i class="fas fa-trash delete"></i>
-                                <span class="tooltip-text">Delete</span>
-                            </a>
-                        </td>
+                    <a onClick={() => viewItems(item)} class="tooltip-container">
+                      <i class="fas fa-eye view"></i>
+                      <span class="tooltip-text">View</span>
+                    </a>
+                    <a onClick={() => edititem(item)} id="editForm" class="tooltip-container">
+                      <i class="fas fa-edit edit"></i>
+                      <span class="tooltip-text">Edit</span>
+                    </a>
+                    <a class="tooltip-container">
+                      <i class="fas fa-trash delete"></i>
+                      <span class="tooltip-text">Delete</span>
+                    </a>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
           <div class="table-footer">
-          <span class="add-content">
-          Showing {startIndex + 1} to{" "}
-          {Math.min(startIndex + itemsPerPage, itemlist.length)} of{" "}
-          {itemlist.length} entries
-        </span>
+            <span class="add-content">
+              Showing {startIndex + 1} to{" "}
+              {Math.min(startIndex + itemsPerPage, itemlist.length)} of{" "}
+              {itemlist.length} entries
+            </span>
             <div className="flex justify-between items-center mt-4">
-       
 
-        <div className="flex space-x-2">
-          <button
-            className={`px-3 py-1 border rounded ${
-              currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            onClick={() => changePage(currentPage - 1)}
-          >
-            &laquo;
-          </button>
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              className={`px-3 py-1 border rounded ${
-                currentPage === i + 1 ? "bg-blue-500 text-white" : ""
-              }`}
-              onClick={() => changePage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-          <button
-            className={`px-3 py-1 border rounded ${
-              currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            onClick={() => changePage(currentPage + 1)}
-          >
-            &raquo;
-          </button>
-        </div>
-      </div>
+
+              <div className="flex space-x-2">
+                <button
+                  className={`px-3 py-1 border rounded ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  onClick={() => changePage(currentPage - 1)}
+                >
+                  &laquo;
+                </button>
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    className={`px-3 py-1 border rounded ${currentPage === i + 1 ? "bg-blue-500 text-white" : ""
+                      }`}
+                    onClick={() => changePage(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  className={`px-3 py-1 border rounded ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  onClick={() => changePage(currentPage + 1)}
+                >
+                  &raquo;
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-    
+
     </>
   )
 }

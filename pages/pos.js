@@ -6,11 +6,24 @@ import NavBarComponent from "./components/NavBarComponent";
 import SidebarComponent from "./components/SideBarComponent";
 import ItemComponent from "./components/ItemComponent";
 import PosComponent from "./components/PosComponent";
+import { useRouter } from "next/router";
+import { useAuth } from "./AuthContext";
 
 
 const Pos = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true); // Default sidebar open
+  const { user,accessToken, authloading } = useAuth();
+  
+  const router = useRouter();
 
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authloading && !user) {
+      router.push("/");
+    }
+  }, [authloading, user, router]);
+
+  // Load Bootstrap JS dynamically
   useEffect(() => {
     import("bootstrap/dist/js/bootstrap.bundle.min.js").catch((err) =>
       console.error("Failed to load Bootstrap:", err)
@@ -19,9 +32,11 @@ const Pos = () => {
 
   // Function to toggle sidebar
   const toggleSidebar = () => {
-    
     setSidebarOpen(!isSidebarOpen);
   };
+
+  // Show loading state while checking authentication
+  if (authloading) return <p>Loading...</p>;
 
   return (
     <>
@@ -48,7 +63,7 @@ const Pos = () => {
       {/* Navbar & Sidebar */}
       <NavBarComponent toggleSidebar={toggleSidebar} />
       <SidebarComponent isOpen={isSidebarOpen} />
-      <PosComponent/>
+      <PosComponent user ={user} accessToken ={accessToken}/>
     </>
   );
 };

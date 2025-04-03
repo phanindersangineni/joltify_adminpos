@@ -4,7 +4,7 @@ import axios from "axios";
 import { useRef, useState, useEffect } from "react";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
-const Menu = ({categoryClickAction}) => {
+const Menu = ({user, accessToken,categoryClickAction}) => {
   const menuRef = useRef(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
@@ -20,16 +20,14 @@ const Menu = ({categoryClickAction}) => {
   }, []);
 
   const loadcategories = async() =>{
-    let accesstoken = await localStorage.getItem("posaccesstoken");
-    const user = await localStorage.getItem('posuser');
-  
+   
     const headers = {
       "content-type": "application/json",
       "X-Content-Type-Options": "nosniff",
       "X-Frame-Options": "SAMEORIGIN",
-      token: accesstoken,
+      token: accessToken,
     };
-    const response = await axios.get(`${DEV}/joltify/categories/search/${user.id}`, { headers });
+    const response = await axios.get(`${DEV}/joltify/categories/search/${user.user_id}`, { headers });
     setCategories(response.data.data);
   }
 

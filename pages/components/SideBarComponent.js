@@ -66,7 +66,7 @@ const SidebarComponent = ({isOpen}) => {
           
           <li>
          
-            <a href="/retaurants">
+            <a href="/restaurant">
               <i className="fas fa-table"></i> <span>Restaurant</span>
             </a>
           </li>

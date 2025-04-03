@@ -4,13 +4,14 @@ import axios from "axios";
 import Swal from "sweetalert2";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
-const ItemComponent = () => {
+const ItemComponent = ({ user, accessToken }) => {
   const itemsPerPage = 5;
   const [itemlist, setItemlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showitemdetail,setShowitemDetails] =useState(false);
   const [itemid,setItemId] =useState(null);
-  const[user,setUser]=useState(null);
+  const[categories,setCategories] =useState([]);
+  
 
   useEffect(() => {
     loaditems();
@@ -32,18 +33,21 @@ const ItemComponent = () => {
     setItemId(null);
     setLoading(true);
     setItemlist([]);
-    let accesstoken = await localStorage.getItem("posaccesstoken");
-    const user = await localStorage.getItem('posuser');
-    setUser(user);
     const headers = {
       "content-type": "application/json",
       "X-Content-Type-Options": "nosniff",
       "X-Frame-Options": "SAMEORIGIN",
-      token: accesstoken,
+      token: accessToken,
     };
      
-    const response = await axios.get(`${DEV}/joltify/items/search`, { headers });
+    const response = await axios.get(`${DEV}/joltify/items/search/${user.user_id}`, { headers });
     setItemlist(response.data.data);
+
+    const categoryresponse = await axios.get(`${DEV}/joltify/categories/search/${user.user_id}`, { headers });
+    
+    setCategories(categoryresponse.data.data);
+
+
     setLoading(false);
   };
   const [filters, setFilters] = useState({
@@ -153,20 +157,19 @@ const ItemComponent = () => {
         status:formData.status,
         caution:formData.caution,
         description:formData.description,
-        createdby:user.id
+        createdby:user.user_id
 
       }
       // Simulating API call
-      let accesstoken = await localStorage.getItem("posaccesstoken");
       const headers = {
         "content-type": "application/json",
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "SAMEORIGIN",
-        token: accesstoken,
+        token: accessToken,
       };
       console.log(saveredata);
      let response ={};
-     
+      
       if(itemid ==null){
   
       // response = await axios.post(`${DEV}/joltify/items`,saveredata, { headers });
@@ -262,6 +265,7 @@ const ItemComponent = () => {
   }
 
   const edititem = async(item) =>{
+   
     setItemId(item.id);
     setFormData(item);
     const openButton = document.getElementById("editForm");
@@ -357,26 +361,26 @@ const ItemComponent = () => {
                     <label className="form-label">Category *</label>
                     <select name="category" className="form-select" value={formData.category} onChange={handleChange}>
                       <option value="">-- Select --</option>
-                      <option value="food">Food</option>
-                      <option value="beverage">Beverage</option>
+                      {categories.map((cat, index) => ( 
+                     <> <option key={index} value={cat.id}>{cat.name}</option>
+                     
+                      </>))}
                     </select>
                     {errors.category && <small className="text-danger">{errors.category}</small>}
                   </div>
                   <div className="col-md-6">
-                    <label className="form-label">Tax (Including)</label>
-                    <select name="tax" className="form-select" value={formData.tax} onChange={handleChange}>
-                      <option value="">--</option>
-                      <option value="5">5%</option>
-                      <option value="10">10%</option>
-                    </select>
+                    <label className="form-label">Tax percentage (Including)</label>
+                    <input type="number" name="tax" className="form-control" value={formData.tax} onChange={handleChange} />
+                 
                   </div>
                 </div>
 
                 <div className="row mb-3">
-                  <div className="col-md-6">
+                  {/*<div className="col-md-6">
                     <label className="form-label">Image</label>
-                    <input type="file" name="image" className="form-control" onChange={handleChange} />
-                  </div>
+                    <input type="file" name="image"
+                     className="form-control" onChange={handleChange} />
+                      </div>*/}
                   <div className="col-md-6">
                     <label className="form-label">Item Type</label><br />
                     <input type="radio" name="item_type" value="veg" checked={formData.item_type === "veg"} onChange={handleChange} /> Veg
@@ -448,17 +452,17 @@ const ItemComponent = () => {
                     <label>CATEGORY</label>
                     <select name="category" className="form-select custom-select" value={filters.category} onChange={handleFilterChange}>
                       <option value="">--</option>
-                      <option value="Electronics">Electronics</option>
-                      <option value="Fashion">Fashion</option>
+                      {categories.map((cat, index) => ( 
+                     <> <option key={index} value={cat.id}>{cat.name}</option>
+                     
+                      </>))}
                     </select>
                   </div>
                   <div className="col-md-3">
                     <label>TAX</label>
-                    <select name="tax" className="form-select custom-select" value={filters.tax} onChange={handleFilterChange}>
-                      <option value="">--</option>
-                      <option value="5%">5%</option>
-                      <option value="10%">10%</option>
-                    </select>
+                    <input type="number" name="tax" className="form-control custom-input"
+                     placeholder="Enter name" value={filters.tax} onChange={handleFilterChange} />
+                  
                   </div>
                 </div>
 
@@ -516,7 +520,7 @@ const ItemComponent = () => {
               {displayedItems.map((item, index) => (
                 <tr key={index} className="hover:bg-gray-100">
                   <td className="border px-4 py-2">{item.name}</td>
-                  <td className="border px-4 py-2">{item.category}</td>
+                  <td className="border px-4 py-2">{item.categoryname}</td>
                   <td className="border px-4 py-2">{item.price}</td>
                   <td className="border px-4 py-2">{item.status}</td>
                   <td class="actions">
