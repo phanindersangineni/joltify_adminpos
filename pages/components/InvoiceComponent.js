@@ -50,6 +50,13 @@ const Invoice = ({ paymentAction, closePayAction,quantity,
           paymentAction(paymentdata);
         }
       }else{
+
+        const paymentdata ={
+          subtotal:subtotal,
+          total:total,
+          discounttotal:discounttotal
+        }
+        paymentAction(paymentdata);
         
        
       }

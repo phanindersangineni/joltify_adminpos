@@ -20,11 +20,13 @@ const PosComponent  =({user, accessToken}) =>{
     const [loading, setLoading] = useState(true);
     const [orderType, setOrderType] = useState("Dine-In"); // Default selection
     const[paymentamount,setPaymentamount] =useState(null);
+    const [orderid,setOrderid] =useState(null);
 
     const handleOrderChange = (event) => {
         setOrderType(event.target.value); // Update selected value
     };
     useEffect(() => {
+      //  document.getElementById('receipt').style.display = "flex";
         loaditems();
         
       }, []);
@@ -58,6 +60,12 @@ const PosComponent  =({user, accessToken}) =>{
     function paymentpopup(data) {
         setPaymentamount(data);
         document.getElementById('payment').style.display = "flex";
+    }
+
+    function openReceiptPopup(orderid) {
+        setOrderid(orderid);
+        document.getElementById('payment').style.display = 'none';
+        document.getElementById('receipt').style.display = "flex";
     }
 
     function openPopup(popupId) {
@@ -129,6 +137,14 @@ const PosComponent  =({user, accessToken}) =>{
         setCustomers([]);
         setSearchTerm('');
     }
+    const closReceiptmodal =(popupId) =>{
+        document.getElementById(popupId).style.display ='none';
+        setSelectedCustomer('');
+        setCustomers([]);
+        setSearchTerm('');
+        setOrderType('Dine-In');
+        setSelectedTable("");
+    }
 
     return(
         <>
@@ -192,7 +208,7 @@ const PosComponent  =({user, accessToken}) =>{
                     <option>Loading...</option>
                 ) : (
                     customers.map((customer) => (
-                        <option key={customer.mobileno}>{customer.name}</option>
+                        <option value={customer.mobileno}>{customer.name}</option>
                     ))
                 )}
             </select>
@@ -266,12 +282,14 @@ const PosComponent  =({user, accessToken}) =>{
             <AddPaymentComponent paymentamount ={paymentamount}
             selectedCustomer ={selectedCustomer} selectedTable ={selectedTable}
                 user ={user} accessToken ={accessToken} orderType={orderType}
-             openReceiptAction={openPopup}/>
+                closepaymentAction ={closemodal}
+             openReceiptAction={openReceiptPopup}/>
         </div>
 
 
         <div class="receiptpopup" id="receipt">
-           <RecieptComponent user ={user} accessToken ={accessToken}/>
+           <RecieptComponent orderid ={orderid} user ={user} closeReceiptAction ={closReceiptmodal}
+            accessToken ={accessToken}/>
         </div>
     </section>
         </>

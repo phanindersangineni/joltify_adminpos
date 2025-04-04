@@ -1,7 +1,8 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
-const PosOrderComponent =() =>{
+const PosOrderComponent =({user, accessToken}) =>{
 
     const[orderlist,setOrderList] =useState([]);
     useEffect(() => {
@@ -10,16 +11,14 @@ const PosOrderComponent =() =>{
 
     const  loadorders = async() =>{
     
-        let accesstoken = await localStorage.getItem("posaccesstoken");
-        const user = await localStorage.getItem('posuser');
-      
+       
         const headers = {
           "content-type": "application/json",
           "X-Content-Type-Options": "nosniff",
           "X-Frame-Options": "SAMEORIGIN",
-          token: accesstoken,
+          token: accessToken,
         };
-        const response = await axios.get(`${DEV}/joltify/orders/search/${user.id}`, { headers });
+        const response = await axios.get(`${DEV}/joltify/orders/search/N/${user.user_id}`, { headers });
         setOrderList(response.data.data);
      
     } 
@@ -27,13 +26,13 @@ const PosOrderComponent =() =>{
     return(<>
     <section class="Items">
         <div class="header">
-            Dashboard / <span class="text-secondary">POS Orders</span>
+            Dashboard / <span class="text-secondary"> Orders</span>
         </div>
 
         <div class="dashboard-items">
 
             <div class="top-bar">
-                <h5 class="card-title">POS Orders</h5>
+                <h5 class="card-title"> Orders</h5>
                 <div class="buttons d-flex gap-2">
                    
                     <div class="btn-group">
@@ -114,6 +113,7 @@ const PosOrderComponent =() =>{
                     <tr>
                         <th>ORDER ID</th>
                         <th>ORDER TYPE</th>
+                        <th>Table No</th>
                         <th>Customer</th>
                         <th>Amount</th>
                         <th>Date</th>
@@ -125,11 +125,13 @@ const PosOrderComponent =() =>{
                 {orderlist?.map((item, index) => (   
                     <tr key={index}>
                         <td>{item.orderid}</td>
-                        <td><span class="text-danger">Dining Table</span></td>
-                        <td>Will Smith</td>
-                        <td>8.50</td>
+                        <td><span class="text-danger">{item.ordertype}</span></td>
+                        <td><span class="text-danger">{item?.tableno}</span></td>
+                        
+                        <td>{item.name}-{item.mobileno}</td>
+                        <td>${item.total}</td>
                         <td>09:41 AM, 09-03-2025</td>
-                        <td><span class="status">Preparing</span></td>
+                        <td><span class="status">{item.orderstatus}</span></td>
                         <td class="actions">
                             <a href="posorderview.html" class="tooltip-container">
                                 <i class="fas fa-eye view"></i>

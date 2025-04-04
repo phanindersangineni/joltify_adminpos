@@ -1,25 +1,39 @@
 import { useState } from "react";
 import { useAuth } from "../AuthContext";
-
+import axios from "axios";
+import Swal from "sweetalert2";
+export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
 const AddPaymentComponent = ({ openReceiptAction,
     selectedCustomer, selectedTable, orderType, paymentamount,user,
-    accessToken }) => {
+    accessToken,closepaymentAction }) => {
     const { cart, cartitems, removecart } = useAuth();
-
+    console.log(selectedCustomer);
     const [selectedMethod, setSelectedMethod] = useState(null); // Default is no selection
     const [recievedamount,setRecievedAmount] =useState(0);
     const handlePaymentSelect = (method) => {
         setSelectedMethod(method); // Update selected payment method
     };
 
+    const closepayment =() =>{
+        closepaymentAction('payment');
+    }
+
     const openreceipt = async() => {
         
+        if(selectedMethod ==null){
+            Swal.fire({
+                text: 'Please select the payment method',
+                icon: 'error',
+                timer: 2000, // The alert will automatically close after 3 seconds
+                showConfirmButton: false, // Hide the confirm button
+              });
+
+        }else{
 
         const createorderdata = {
             items: cartitems,
-            name: selectedCustomer.name,
-            mobileno: selectedCustomer.mobileno,
+            mobileno:selectedCustomer,
             ordertype: orderType,
             tableno: selectedTable,
             total: paymentamount.total,
@@ -40,26 +54,39 @@ const AddPaymentComponent = ({ openReceiptAction,
           };
        // const response = await fetch(`http://localhost:3000/customers/search?name=${searchTerm}`);
         //const data = await response.json();
-        const response = await axios.get(`${DEV}/joltify/orders`, { headers });
-  
+        const response = await axios.post(`${DEV}/joltify/orders`,createorderdata, { headers });
+        if(response.data.OrderID) {
+            
+              openReceiptAction(response.data.OrderID);   
 
-
-        openReceiptAction('receipt');
+        }else{
+            Swal.fire({
+                text: 'Failed to create an order , Please contact admin',
+                icon: 'error',
+                timer: 2000, // The alert will automatically close after 3 seconds
+                showConfirmButton: false, // Hide the confirm button
+              });
+        }
+    }
+        
     }
 
     return (
         <>
             <div class="order">
                 <div class="header">
-                    <h5>Customers</h5>
-                    <span class="close"><i class="bi bi-x-circle text-danger"></i></span>
+                    <h5>Payments</h5>
+                    <span class="close" onClick={closepayment}><i class="bi bi-x-circle text-danger"></i></span>
                 </div>
                 <div class="totalamount">
                     <p>Total Amount</p>
                     <div class="amount">$ {paymentamount?.total}</div>
                 </div>
+                <div class="totalamount">
+                <h5>Select Payment Method : {selectedMethod}</h5>
+                </div>
                 <div class="payment-methods">
-                    <h5>Select Payment Method</h5> <br/>
+                    
                     <button onClick={() => handlePaymentSelect("Cash")}>
                         <i className="bi bi-cash-coin"></i> Cash
                     </button>

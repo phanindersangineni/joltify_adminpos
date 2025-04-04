@@ -1,12 +1,65 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./ReceiptComponent.css";
+import axios from "axios";
+import { useAuth } from "../AuthContext";
+export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
-const RecieptComponent = () => {
+const overlayStyle = {
+  position: 'fixed',
+  top: '100%',
+  left: '100%',
+  transform: 'translate(-50%, -50%)',
+  background: 'rgba(0, 0, 0, 0.3)',
+  width: '100vw',
+  height: '100vh',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 999, // Optional, ensures it stays on top
+};
+
+const receiptStyle = {
+  maxWidth: '350px',
+  border: '1px solid #ccc',
+  padding: '15px',
+  borderRadius: '8px',
+  background: '#fff',
+  boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+  fontFamily: 'Arial, sans-serif',
+};
+const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction}) => {
+  const { removecart } = useAuth();
+  useEffect(() => {
+    getoderdetails();
+    
+  }, []);
+
+  const closeReceipt =() =>{
+    removecart();
+    closeReceiptAction('receipt');
+  }
+
+  const[order,setOrder] =useState({});
+  const[items,setItems]=useState([]);
+
+  const getoderdetails = async() =>{
+    const headers = {
+      "content-type": "application/json",
+      "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "SAMEORIGIN",
+      token: accessToken,
+    };
+    let ord ='ORD-4213';
+    const response = await axios.get(`${DEV}/joltify/orders/search/${ord}/${user.user_id}`, { headers });
+    console.log(response);
+    setOrder(response.data.data[0]);
+    setItems(response.data.data[0].items);
+  }
   return (
-    <div className="popup">
+    <div className={overlayStyle}>
       <div className="receipt">
         <div className="btn-container">
-          <button className="btn1">
+          <button className="btn1" onClick={closeReceipt}>
             <i className="bi bi-chevron-left"></i> Close
           </button>
           <button className="btn1 btn1-print">
@@ -14,28 +67,27 @@ const RecieptComponent = () => {
           </button>
         </div>
         <div className="header mt-2">
-          <p>Desi Restaurant </p>
+          <p>{order?.restaurantname} </p>
          
           <p className="address">
-            House: 25, Road No: 2, Block A, Mirpur-1, Dhaka 1216<br />
-            Tel: +536464646464
+           {order?.address}
           </p>
         </div>
         <div className="order-info">
         <p>
             <strong>Customer Name :</strong>
             <br />
-            Demo User
+            {order?.customername}
           </p>
           <p>
             <strong>Contact :</strong>
             <br />
-           7292727277
+            {order?.customerno}
           </p>
           <p>
-            <strong>Order #1603256</strong>
+            <strong>Order # {order?.orderid}</strong>
             <br />
-            16-03-2025 07:47 PM
+            {order?.ordereddateformatted}
           </p>
         </div>
         <div className="items">
@@ -48,15 +100,23 @@ const RecieptComponent = () => {
               </tr>
             </thead>
             <tbody>
+            {items?.map((item, index) => ( 
               <tr>
-                <td>1</td>
+                <td>{item?.quantity}</td>
                 <td>
-                  Chicken Dumplings
+                {item?.name}
                   <br />
-                  <small>Size: Regular - 8 pcs</small>
+                  
+                  {item.variants?.map((variant, index) => (
+                <small key={index}>{variant.key}: {variant.name} - $ {variant.price}</small>
+                ))} <br/>
+                {item.extras?.map((extra, index) => (
+                  <small key={index}>{extra?.name} - ${extra?.price}.</small>
+                ))}
                 </td>
-                <td>₹2.38</td>
+                <td>₹ {item?.price}</td>
               </tr>
+               ))}
               <tr>
                 <td></td>
                 <td>VAT (5.00%)</td>
@@ -67,28 +127,28 @@ const RecieptComponent = () => {
         </div>
         <div className="totals">
           <p>
-            Subtotal: <span className="float-end">₹0.00</span>
+            Subtotal: <span className="float-end">₹ {order?.total}</span>
           </p>
           <p>
-            Total Tax: <span className="float-end">₹0.00</span>
+            Total Tax: <span className="float-end">₹ 0</span>
           </p>
           <p>
-            Discount: <span className="float-end">₹0.00</span>
+            Discount: <span className="float-end">₹{order?.discount}</span>
           </p>
           <p>
             <strong>
-              Total: <span className="float-end">₹2.50</span>
+              Total: <span className="float-end">₹ {order.total}</span>
             </strong>
           </p>
         </div>
         <div className="order-info">
           <p>
-            Order Type: Takeaway
+            Order Type: {order?.ordertype}
             <br />
-            Payment Type: Cash
+            Payment Type: {order?.paymenttype}
           </p>
         </div>
-        <div className="token">Token #1234</div>
+        
         <div className="footer text-center mt-2">
           <p>Thank You<br />Please Come Again</p>
           <p className="text-muted">
