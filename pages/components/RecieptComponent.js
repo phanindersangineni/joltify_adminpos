@@ -27,12 +27,12 @@ const receiptStyle = {
   boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
   fontFamily: 'Arial, sans-serif',
 };
-const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction}) => {
+const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction,quantity}) => {
   const { removecart } = useAuth();
   useEffect(() => {
     getoderdetails();
     
-  }, []);
+  }, [quantity]);
 
   const closeReceipt =() =>{
     removecart();
@@ -148,30 +148,32 @@ const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction}) => {
                   <small key={index}>{extra?.name} - ${extra?.price}.</small>
                 ))}
                 </td>
-                <td>₹ {item?.price}</td>
+                <td>$ {item?.price}</td>
               </tr>
                ))}
-              <tr>
-                <td></td>
-                <td>VAT (5.00%)</td>
-                <td>₹0.12</td>
-              </tr>
+             
             </tbody>
           </table>
         </div>
         <div className="totals">
           <p>
-            Subtotal: <span className="float-end">₹ {order?.total}</span>
+            Subtotal: <span className="float-end">$ {order?.total}</span>
+          </p>
+          
+          <p>
+            Discount: <span className="float-end">$ {order?.discount}</span>
           </p>
           <p>
-            Total Tax: <span className="float-end">₹ 0</span>
-          </p>
-          <p>
-            Discount: <span className="float-end">₹{order?.discount}</span>
+            Total Tax: <span className="float-end">$ {order?.tax}</span>
           </p>
           <p>
             <strong>
-              Total: <span className="float-end">₹ {order?.total}</span>
+              Total: <span className="float-end">$ {order?.total}</span>
+            </strong>
+          </p>
+          <p>
+            <strong>
+              Payable Amount: <span className="float-end">$ {order?.payableamount}</span>
             </strong>
           </p>
         </div>

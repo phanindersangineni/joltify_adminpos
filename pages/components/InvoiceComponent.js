@@ -10,6 +10,8 @@ const Invoice = ({ paymentAction, closePayAction,quantity,
   console.log(cartitems);
   const[subtotal,setSubtotal] =useState(0);
   const[total,setTotal] =useState(0);
+  const [tax,setTax] =useState(0);
+  const [payable,setPayable] =useState(0);
  
   const [discount,setDiscount] =useState(0);
   const [discounttotal,setDiscountTotal] =useState(0);
@@ -45,8 +47,11 @@ const Invoice = ({ paymentAction, closePayAction,quantity,
           const paymentdata ={
             subtotal:subtotal,
             total:total,
-            discounttotal:discounttotal
+            discounttotal:discounttotal,
+            tax:tax,
+            payable:payable
           }
+          
           paymentAction(paymentdata);
         }
       }else{
@@ -54,7 +59,9 @@ const Invoice = ({ paymentAction, closePayAction,quantity,
         const paymentdata ={
           subtotal:subtotal,
           total:total,
-          discounttotal:discounttotal
+          discounttotal:discounttotal,
+          tax:tax,
+          payable:payable
         }
         paymentAction(paymentdata);
         
@@ -67,7 +74,7 @@ const Invoice = ({ paymentAction, closePayAction,quantity,
    
   }
   const closePaymentAction = (e) => {
-   
+    removecart();
     closePayAction('payment');
   }
 
@@ -97,6 +104,10 @@ const applydiscount =() =>{
   let newtotal = Math.ceil(parseFloat(finalprice) -parseFloat(discountss));
   setDiscountTotal(discountss);
   setTotal(newtotal);
+  let tax = Math.ceil(4 /100 * parseFloat(finalprice));
+   setTax(tax);
+   let payable = parseFloat(newtotal) +parseFloat(tax);
+   setPayable(payable);
 
 
 }
@@ -155,7 +166,13 @@ const reloadcartprice =() =>{
    });
 
    setSubtotal(finalprice);
+   
    setTotal(finalprice);
+   let tax = Math.ceil(4 /100 * parseFloat(finalprice));
+   setTax(tax);
+   let payable = parseFloat(finalprice) +parseFloat(tax);
+   setPayable(payable);
+
 
 }
 
@@ -222,6 +239,7 @@ const reloadcartprice =() =>{
             <td></td>
             <td className="items-price">$ {discounttotal}</td>
           </tr>
+          
           <tr>
             <td className="items-name">
               <strong>Total</strong>
@@ -229,6 +247,20 @@ const reloadcartprice =() =>{
             <td></td>
             <td className="items-price">
               <strong>$ {total}</strong>
+            </td>
+          </tr>
+          <tr>
+            <td className="items-name">Tax(4 %)</td>
+            <td></td>
+            <td className="items-price">$ {tax}</td>
+          </tr>
+          <tr>
+            <td className="items-name">
+              <strong>Payable Amount</strong>
+            </td>
+            <td></td>
+            <td className="items-price">
+              <strong>$ {payable}</strong>
             </td>
           </tr>
         </tbody>

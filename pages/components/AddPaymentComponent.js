@@ -36,13 +36,16 @@ const AddPaymentComponent = ({ openReceiptAction,
             mobileno:selectedCustomer,
             ordertype: orderType,
             tableno: selectedTable,
-            total: paymentamount.total,
+            payableamount: paymentamount.payable,
             subtotal: paymentamount.subtotal,
             discount: paymentamount.discounttotal,
-            paymenttype: 'Cash',
+            paymenttype: selectedMethod,
             discounttype: "PERCENTAGE",
             customertype:'POS',
-            createdby:user.user_id
+            createdby:user.user_id,
+            tax:paymentamount.tax,
+            total:paymentamount.total,
+            orderstatus:'Accept'
 
         }
 

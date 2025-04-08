@@ -1,16 +1,21 @@
-import Head from "next/head"
+"use client";
 
-import PosOrderComponent from "./components/PosOrderComponent"
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react";
+import Head from "next/head";
 import NavBarComponent from "./components/NavBarComponent";
 import SidebarComponent from "./components/SideBarComponent";
-import { useAuth } from "./AuthContext";
+import ItemComponent from "./components/ItemComponent";
+import PosComponent from "./components/PosComponent";
 import { useRouter } from "next/router";
+import { useAuth } from "./AuthContext";
+import KitchenComponent from "./components/KitchenComponent";
+import OddsComponent from "./components/OddsComponent";
 
 
-const posorders =() =>{
+const Odds = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true); // Default sidebar open
   const { user,accessToken, authloading } = useAuth();
+  
   const router = useRouter();
 
   // Redirect if not authenticated
@@ -34,9 +39,10 @@ const posorders =() =>{
 
   // Show loading state while checking authentication
   if (authloading) return <p>Loading...</p>;
-    return(
-        <>
-         <Head>
+
+  return (
+    <>
+      <Head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Joltify</title>
@@ -56,11 +62,12 @@ const posorders =() =>{
         <link rel="stylesheet" href="/assets/css/styles.css" />
       </Head>
 
-      <NavBarComponent toggleSidebar={toggleSidebar}/>
-      <SidebarComponent isOpen={isSidebarOpen}/>
-      <PosOrderComponent user ={user} accessToken ={accessToken}/>
-        </>
-    )
-}
+      {/* Navbar & Sidebar */}
+      <NavBarComponent toggleSidebar={toggleSidebar} />
+      {/*<SidebarComponent isOpen={isSidebarOpen} />*/}
+      <OddsComponent user ={user} accessToken ={accessToken}/>
+    </>
+  );
+};
 
-export default posorders
+export default Odds;

@@ -26,6 +26,7 @@ const PosComponent  =({user, accessToken}) =>{
         setOrderType(event.target.value); // Update selected value
     };
     useEffect(() => {
+      
       //  document.getElementById('receipt').style.display = "flex";
         loaditems();
         
@@ -63,6 +64,7 @@ const PosComponent  =({user, accessToken}) =>{
     }
 
     function openReceiptPopup(orderid) {
+        setQuantity(Date.now());
         setOrderid(orderid);
         document.getElementById('payment').style.display = 'none';
         document.getElementById('receipt').style.display = "flex";
@@ -289,7 +291,7 @@ const PosComponent  =({user, accessToken}) =>{
 
         <div class="receiptpopup" id="receipt">
            <RecieptComponent orderid ={orderid} user ={user} closeReceiptAction ={closReceiptmodal}
-            accessToken ={accessToken}/>
+            accessToken ={accessToken} quantity ={quantity}/>
         </div>
     </section>
         </>

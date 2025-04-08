@@ -273,12 +273,20 @@ const OrdedetailsComponent = ({ user, accessToken }) => {
                   <p className="mt-4">
                     <strong>Total</strong>
                   </p>
+                  <p>Tax</p>
+                  <p className="mt-4">
+                    <strong>Payable Amount</strong>
+                  </p>
                 </div>
                 <div className="right">
                   <p>$ {order.subtotal}</p>
                   <p>$ {order.discount}</p>
                   <p className="mt-4">
                     <strong>$ {order.total}</strong>
+                  </p>
+                  <p>$ {order.tax}</p>
+                  <p className="mt-4">
+                    <strong>$ {order.payableamount}</strong>
                   </p>
                 </div>
               </div>
