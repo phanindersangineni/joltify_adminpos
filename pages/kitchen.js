@@ -1,15 +1,17 @@
-import Head from "next/head"
+"use client";
 
-
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react";
+import Head from "next/head";
 import NavBarComponent from "./components/NavBarComponent";
 import SidebarComponent from "./components/SideBarComponent";
-import OrdedetailsComponent from "./components/OrderdetailsComponent";
+import ItemComponent from "./components/ItemComponent";
+import PosComponent from "./components/PosComponent";
 import { useRouter } from "next/router";
 import { useAuth } from "./AuthContext";
+import KitchenComponent from "./components/KitchenComponent";
 
 
-const orderdetails =() =>{
+const Kitchen = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true); // Default sidebar open
   const { user,accessToken, authloading } = useAuth();
   
@@ -37,9 +39,9 @@ const orderdetails =() =>{
   // Show loading state while checking authentication
   if (authloading) return <p>Loading...</p>;
 
-    return(
-        <>
-         <Head>
+  return (
+    <>
+      <Head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Joltify</title>
@@ -59,11 +61,12 @@ const orderdetails =() =>{
         <link rel="stylesheet" href="/assets/css/styles.css" />
       </Head>
 
-      <NavBarComponent toggleSidebar={toggleSidebar}/>
-      <SidebarComponent isOpen={isSidebarOpen}/>
-      <OrdedetailsComponent user ={user} accessToken ={accessToken}/>
-        </>
-    )
-}
+      {/* Navbar & Sidebar */}
+      <NavBarComponent toggleSidebar={toggleSidebar} />
+      {/*<SidebarComponent isOpen={isSidebarOpen} />*/}
+      <KitchenComponent user ={user} accessToken ={accessToken}/>
+    </>
+  );
+};
 
-export default orderdetails
+export default Kitchen;

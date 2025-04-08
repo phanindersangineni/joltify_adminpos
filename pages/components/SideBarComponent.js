@@ -87,6 +87,11 @@ const SidebarComponent = ({isOpen}) => {
               <i className="fas fa-receipt"></i> <span>Orders</span>
             </a>
           </li>
+          <li>
+            <a href="/kitchen">
+              <i className="fas fa-receipt"></i> <span>Kitchen Orders</span>
+            </a>
+          </li>
           
           <li className="sidebar-heading">PROMO</li>
           <li>

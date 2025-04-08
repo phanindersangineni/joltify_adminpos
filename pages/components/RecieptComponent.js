@@ -42,6 +42,40 @@ const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction}) => {
   const[order,setOrder] =useState({});
   const[items,setItems]=useState([]);
 
+  function formatteddate(frdate) {
+    try {
+        const date = new Date(frdate); // The given date
+       
+        let timezone = 'Asia/Kolkata';
+        let z = 'en-IN';
+        /*if (localStorage.getItem('language') == 'en') {
+            timezone = 'Asia/Kolkata';
+            z = 'en-IN';
+        }*/
+
+        // Format the date using Intl.DateTimeFormat
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            timeZoneName: 'short',  // This will show the timezone abbreviation
+            timeZone: timezone  // Set to IST
+        };
+
+        const formattedDate = new Intl.DateTimeFormat(z, options).format(
+            date
+        );
+
+        return formattedDate;
+    } catch (e) {
+        return null;
+    }
+}
+
   const getoderdetails = async() =>{
     const headers = {
       "content-type": "application/json",
@@ -49,11 +83,11 @@ const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction}) => {
       "X-Frame-Options": "SAMEORIGIN",
       token: accessToken,
     };
-    let ord ='ORD-4213';
-    const response = await axios.get(`${DEV}/joltify/orders/search/${ord}/${user.user_id}`, { headers });
+    
+    const response = await axios.get(`${DEV}/joltify/orders/search/${orderid}/${user.user_id}`, { headers });
     console.log(response);
-    setOrder(response.data.data[0]);
-    setItems(response.data.data[0].items);
+    setOrder(response?.data?.data[0]);
+    setItems(response?.data?.data[0]?.items);
   }
   return (
     <div className={overlayStyle}>
@@ -137,7 +171,7 @@ const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction}) => {
           </p>
           <p>
             <strong>
-              Total: <span className="float-end">₹ {order.total}</span>
+              Total: <span className="float-end">₹ {order?.total}</span>
             </strong>
           </p>
         </div>
@@ -146,6 +180,8 @@ const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction}) => {
             Order Type: {order?.ordertype}
             <br />
             Payment Type: {order?.paymenttype}
+            <br/>
+            Order Date :{formatteddate(order?.orderdate)}
           </p>
         </div>
         
