@@ -83,7 +83,7 @@ const AddPaymentComponent = ({ openReceiptAction,
                 </div>
                 <div class="totalamount">
                     <p>Total Amount</p>
-                    <div class="amount">$ {paymentamount?.total}</div>
+                    <div class="amount">$ {paymentamount?.payable}</div>
                 </div>
                 <div class="totalamount">
                 <h5>Select Payment Method : {selectedMethod}</h5>

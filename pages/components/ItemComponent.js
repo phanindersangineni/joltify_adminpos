@@ -172,7 +172,7 @@ const ItemComponent = ({ user, accessToken }) => {
       
       if(itemid ==null){
   
-      // response = await axios.post(`${DEV}/joltify/items`,saveredata, { headers });
+      response = await axios.post(`${DEV}/joltify/items`,saveredata, { headers });
       }else{
          response = await axios.put(`${DEV}/joltify/items/${itemid}`,saveredata, { headers });
        

@@ -1,10 +1,12 @@
 "use client"; // Ensure it's a Client Component
 
 import { useEffect, useState } from "react";
+import { useAuth } from "../AuthContext";
 
-const SidebarComponent = ({isOpen}) => {
+const SidebarComponent = ({ isOpen }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeLink, setActiveLink] = useState("");
+  const { user } = useAuth();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -30,7 +32,7 @@ const SidebarComponent = ({isOpen}) => {
   return (
     <>
       <div className={`sidebar ${isOpen ? "collapsed" : ""}`} id="sidebar">
-       
+
         <ul>
           <li>
             <a
@@ -42,6 +44,19 @@ const SidebarComponent = ({isOpen}) => {
             </a>
           </li>
           <li>
+
+              <a href="/table">
+                <i className="fas fa-table"></i> <span>Dining Tables</span>
+              </a>
+            </li>
+            <li>
+
+              <a href="/category">
+                <i className="fas fa-table"></i> <span>Category</span>
+              </a>
+            </li>
+          <li>
+            
             <a
               href="/items"
               className={activeLink === "/items" ? "active" : ""}
@@ -51,31 +66,21 @@ const SidebarComponent = ({isOpen}) => {
             </a>
           </li>
           <li>
-         
+
             <a href="/users">
               <i className="fas fa-table"></i> <span>Users</span>
             </a>
           </li>
-           
-          <li>
-         
-            <a href="/category">
-              <i className="fas fa-table"></i> <span>Category</span>
-            </a>
-          </li>
-          
-          <li>
-         
+
+
+
+       {user.roleid =='ROLE_ADMIN' &&   <li>
+
             <a href="/restaurant">
               <i className="fas fa-table"></i> <span>Restaurant</span>
             </a>
-          </li>
-          <li>
-         
-            <a href="/table">
-              <i className="fas fa-table"></i> <span>Dining Tables</span>
-            </a>
-          </li>
+          </li> }
+
           <li className="sidebar-heading">POS & ORDERS</li>
           <li>
             <a href="/pos">
@@ -97,7 +102,7 @@ const SidebarComponent = ({isOpen}) => {
               <i className="fas fa-receipt"></i> <span>Order Display</span>
             </a>
           </li>
-          
+
           <li className="sidebar-heading">PROMO</li>
           <li>
             <a href="#">

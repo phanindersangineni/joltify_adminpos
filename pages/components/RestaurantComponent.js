@@ -238,6 +238,15 @@ const RestaurantComponent = ({ user, accessToken }) => {
 
           formContainer.classList.remove("show");
         }
+        else if (response.data.data == 'EXISTS') {
+          Swal.fire({
+            text: 'Data with either mobile number or email id already exists',
+            icon: 'error',
+            timer: 2000, // The alert will automatically close after 3 seconds
+            showConfirmButton: false, // Hide the confirm button
+          });
+          
+        }
         else {
           Swal.fire({
             text: 'Failed to add Data',

@@ -509,7 +509,7 @@ const loadvariantlist = (objlist) => {
             {groupedVariants[attribute].map((variant, index) => (
               <tr key={index}>
                 <td>{variant.name}</td>
-                <td>{variant.price}</td>
+                <td>$ {variant.price}</td>
                 <td class="actions">
                 <a class="tooltip-container" onClick={()=>filtervariant(variant)}>
                                             <i class="fas fa-trash delete"></i>
