@@ -21,6 +21,7 @@ const PosComponent  =({user, accessToken}) =>{
     const [orderType, setOrderType] = useState("Dine-In"); // Default selection
     const[paymentamount,setPaymentamount] =useState(null);
     const [orderid,setOrderid] =useState(null);
+    const[filteredlist,setFilteredList] =useState([]);
 
     const handleOrderChange = (event) => {
         setOrderType(event.target.value); // Update selected value
@@ -42,6 +43,7 @@ const PosComponent  =({user, accessToken}) =>{
         };
         const response = await axios.get(`${DEV}/joltify/items/search/${user.user_id}`, { headers });
         setItemList(response.data.data);
+        setFilteredList(response.data.data);
 
         const response1 = await axios.get(`${DEV}/joltify/tableinfo/search/${user.user_id}`, { headers });
         setTableList(response1.data.data);
@@ -49,6 +51,15 @@ const PosComponent  =({user, accessToken}) =>{
 
 
     const filteritembycategory =(catitem)=>{
+
+       console.log(catitem);
+       if(catitem.id !=0){
+        let filtered = itemlist.filter(item => parseInt(item.category) === catitem.id);
+        setFilteredList(filtered);
+       }else{
+        setFilteredList(itemlist);
+       }
+         
 
     }
     
@@ -147,6 +158,18 @@ const PosComponent  =({user, accessToken}) =>{
         setOrderType('Dine-In');
         setSelectedTable("");
     }
+   const[searchtxt,setSearchTxt] =useState(null);
+    const searchbyitemname =(value)=>{
+        console.log(searchtxt);
+        if(searchtxt){
+        let filtered = itemlist.filter(item =>
+            item.name.toLowerCase().startsWith(searchtxt.toLowerCase())
+          );
+          setFilteredList(filtered);
+        }else{
+            setFilteredList(itemlist);
+        }
+    }
 
     return(
         <>
@@ -155,9 +178,9 @@ const PosComponent  =({user, accessToken}) =>{
         <div class="pop-content">
             <div class="pop-left">
                 <div class="search-container">
-                    <input type="text" class="form-control search-input" 
+                    <input type="text" onChange={(e)=>setSearchTxt(e.target.value)}  class="form-control search-input" 
                     placeholder="Search by Menu Item"/>
-                    <button class="search-button">
+                    <button class="search-button" onClick={searchbyitemname}>
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
@@ -166,7 +189,7 @@ const PosComponent  =({user, accessToken}) =>{
 
                 <div class="menu-container pos-items">
                  
-                {itemlist?.map((item, index) => ( 
+                {filteredlist?.map((item, index) => ( 
                     <div key={index} class="items-card">
                       {item?.image &&  <div class="item-image">
                             <img src ={`${DEV}/items/files/${item?.image}`} alt="Chicken Dumplings" />

@@ -18,13 +18,13 @@ const NavBarComponent = ({ toggleSidebar }) => {
            
             <div className="dropdown">
               <button className="btn btn-light dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown">
-                <img src="/assets/images/profile.png" width="35px" className="rounded me-2" alt="" /> Sudarsan
+                <img src="/assets/images/profile.png" width="35px" className="rounded me-2" alt="" /> {user?.fullname}
               </button>
               <ul className="dropdown-menu dropdown-menu-end profile-dropdown">
                 <li className="text-center">
                   <img src="/assets/images/profile.png" alt="User Profile" />
-                  <h6>{user.fullname}</h6>
-                  <p>{user.username}<br />+{user.mobileno}</p>
+                  <h6>{user?.fullname}</h6>
+                  <p>{user?.username}<br />+{user?.mobileno}</p>
                 </li>
                 <li>
                   <hr className="dropdown-divider" />

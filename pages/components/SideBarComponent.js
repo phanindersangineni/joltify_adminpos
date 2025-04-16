@@ -74,7 +74,7 @@ const SidebarComponent = ({ isOpen }) => {
 
 
 
-       {user.roleid =='ROLE_ADMIN' &&   <li>
+       {user?.roleid =='ROLE_ADMIN' &&   <li>
 
             <a href="/restaurant">
               <i className="fas fa-table"></i> <span>Restaurant</span>
