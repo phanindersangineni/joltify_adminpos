@@ -55,7 +55,7 @@
 
 /* --------- sidebar start --------- */
 .sidebar.collapsed {
-    width: 60px;
+    width: 0px;
 }
 
 .sidebar.collapsed ul li a span {
@@ -145,7 +145,7 @@
 }
 
 .collapsed+.content {
-    margin-left: 60px;
+    margin-left: 0px;
 }
 
 .content {
@@ -454,11 +454,11 @@
 }
 
 .collapsed+.Items {
-    margin-left: 60px;
+    margin-left: 0px;
 }
 
 .collapsed+.posorderview {
-    margin-left: 60px;
+    margin-left: 0px;
 }
 
 .dashboard-items {
@@ -939,7 +939,7 @@
 
 
 .collapsed+.view-section {
-    margin-left: 60px;
+    margin-left: 0px;
 }
 
 .view-content {
@@ -1128,7 +1128,7 @@
 }
 
 .collapsed+.pos {
-    margin-left: 60px;
+    margin-left: 0px;
 }
 
 
@@ -2437,3 +2437,6 @@
     
 
 }
+
+
+
