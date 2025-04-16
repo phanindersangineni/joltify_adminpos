@@ -8,7 +8,7 @@ const AddPaymentComponent = ({ openReceiptAction,
     selectedCustomer, selectedTable, orderType, paymentamount,user,
     accessToken,closepaymentAction }) => {
     const { cart, cartitems, removecart } = useAuth();
-    console.log(selectedCustomer);
+   
     const [selectedMethod, setSelectedMethod] = useState(null); // Default is no selection
     const [recievedamount,setRecievedAmount] =useState(0);
     const handlePaymentSelect = (method) => {

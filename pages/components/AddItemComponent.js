@@ -56,7 +56,7 @@ const AddItemComponent = ({ closeActionItem, item, openInvoiceAction,quantity })
     const loadvariantlist = (objlist) => {
         function removeDuplicates(array) {
             const seen = new Set();
-            return array.filter((item) => {
+            return array?.filter((item) => {
                 const key = `${item.name}-${item.attributes}`;
                 if (seen.has(key)) {
                     return false;
@@ -69,7 +69,7 @@ const AddItemComponent = ({ closeActionItem, item, openInvoiceAction,quantity })
         const uniqueVariants = removeDuplicates(objlist);
         const grouped = {};
 
-        uniqueVariants.forEach((variant) => {
+        uniqueVariants?.forEach((variant) => {
             if (!grouped[variant.attributes]) {
                 grouped[variant.attributes] = [];
             }

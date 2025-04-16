@@ -64,7 +64,7 @@ const Menu = ({user, accessToken,categoryClickAction}) => {
         </button>
       )}
       <div className="menu-items" id="menu" ref={menuRef} style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
-        <div className="menu-item active">
+        <div className="menu-item active" onClick={()=>loaditemsbycategory({id:0})}>
           <img src="/assets/images/all-category.png" alt="All Items" />
           <p>All Items</p>
         </div>
