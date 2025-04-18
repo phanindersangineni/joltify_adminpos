@@ -47,7 +47,7 @@ const DashboardComponent =() =>{
             </div>
         </div>
 
-        <div class="graph d-flex justify-content-between mt-5">
+        <div class="graph  justify-content-between mt-5">
             <div class="sales-summary-container">
                 <div class="sales-header">
                     <div class="sales-text">
@@ -83,7 +83,7 @@ const DashboardComponent =() =>{
             </div>
         </div>
 
-        <div class="graph d-flex justify-content-between mt-5">
+        <div class="graph justify-content-between mt-5">
             <div class="sales-summary-container">
                 <div class="sales-header">
                     <div class="sales-text">

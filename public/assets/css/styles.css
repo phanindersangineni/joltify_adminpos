@@ -191,11 +191,13 @@
         }
 
         .date-picker-container {
+            display: none;
             position: relative;
             width: 200px;
         }
 
         .date-picker-container input {
+            display: none;
             width: 100%;
             padding: 8px 30px 8px 10px;
             border: 1px solid #ddd;
@@ -203,6 +205,7 @@
         }
 
         .calendar-icon {
+            display: none;
             position: absolute;
             right: 10px;
             top: 50%;
@@ -289,6 +292,7 @@
 
     .graph {
         gap: 15px;
+        display: flex;
 
         .sales-summary-container {
             width: 100%;
@@ -2220,6 +2224,7 @@
     .left {
         width: 30%;
         margin-right: 20px;
+
         .card {
             background-color: #fff;
             border-radius: 10px;
@@ -2228,11 +2233,13 @@
 
             .top {
                 border-bottom: 2px solid rgba(208, 239, 249, 0.606);
+
                 h3 {
                     padding: 15px;
                     font-size: 20px;
                 }
             }
+
             .bottom {
                 display: flex;
                 justify-content: space-between;
@@ -2244,6 +2251,7 @@
                     margin-bottom: 0;
                     font-weight: 500;
                 }
+
                 .size {
                     font-size: 14px;
                     font-weight: 400;
@@ -2261,8 +2269,9 @@
                 }
             }
         }
-        
+
     }
+
     .top-header {
         background-color: #fff;
         padding: 16px;
@@ -2381,8 +2390,9 @@
                 cursor: pointer;
             }
 
-            
+
         }
+
         a:hover {
             box-shadow: 0px 0px 5px lightblue;
             transform: scale(.95);
@@ -2398,14 +2408,18 @@
 
     .collapseElement {
         padding: 16px;
+
         .top {
             display: flex;
+
             span {
                 margin-right: 10px;
             }
+
             p {
                 margin-bottom: 0;
             }
+
             .size {
                 font-size: 14px;
             }
@@ -2419,10 +2433,13 @@
 
     .collapseElement {
         padding: 16px;
-        display: none; /* hidden initially */
+        display: none;
+        /* hidden initially */
     }
+
     .collapseElement.active {
-        display: block; /* show when active */
+        display: block;
+        /* show when active */
     }
 
     .collapseElement {
@@ -2430,13 +2447,45 @@
         max-height: 0;
         transition: max-height 0.3s ease;
     }
-    
+
     .collapseElement.active {
-        max-height: 500px; /* adjust based on your content size */
+        max-height: 500px;
+        /* adjust based on your content size */
     }
-    
+
 
 }
 
 
 
+
+
+@media (max-width: 767px) {
+
+
+
+    .content {
+        display: block;
+
+        .section1 {
+            display: block;
+
+            .cards {
+                margin: 10px auto;
+            }
+        }
+
+        .graph {
+            display: block;
+            margin: 10px auto;
+
+            .graph-container {
+                margin: 10px auto;
+            }
+
+            .sales-summary-container {
+                margin: 10px auto;
+            }
+        }
+    }
+}
