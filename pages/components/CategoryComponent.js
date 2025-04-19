@@ -231,29 +231,40 @@ const CategoryComponent = ({user,accessToken}) => {
     const openButton = document.getElementById("openForm");
     const closeButton = document.getElementById("closeForm");
     const formContainer = document.getElementById("formContainer");
-
+  
+    const handleOpenForm = () => {
+      // Reset all form-related states
+      setFormData({ name: "", status: "active" });
+      setErrors({});
+      setFileData(null);
+      setItemPic(null);
+      setItemId(null);
+  
+      // Clear the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = null;
+      }
+  
+      formContainer.classList.add("show");
+    };
+  
+    const handleCloseForm = () => {
+      formContainer.classList.remove("show");
+    };
+  
     if (openButton && closeButton && formContainer) {
-      openButton.addEventListener("click", () => {
-        formContainer.classList.add("show");
-      });
-
-      closeButton.addEventListener("click", () => {
-        formContainer.classList.remove("show");
-      });
+      openButton.addEventListener("click", handleOpenForm);
+      closeButton.addEventListener("click", handleCloseForm);
     }
-
+  
     return () => {
       if (openButton && closeButton) {
-        openButton.removeEventListener("click", () => {
-          formContainer.classList.add("show");
-        });
-
-        closeButton.removeEventListener("click", () => {
-          formContainer.classList.remove("show");
-        });
+        openButton.removeEventListener("click", handleOpenForm);
+        closeButton.removeEventListener("click", handleCloseForm);
       }
     };
   }, []);
+  
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -282,6 +293,8 @@ const CategoryComponent = ({user,accessToken}) => {
 
     formContainer.classList.add("show");
   }
+
+  
 
   return (
     <>
@@ -329,7 +342,7 @@ const CategoryComponent = ({user,accessToken}) => {
                 </ul>
               </div>
 
-              <div class="btn-group">
+              {/*<div class="btn-group">
                 <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown"
                   data-bs-display="static" aria-expanded="false">
                   <i class="bi bi-box-arrow-in-down"></i> Import
@@ -338,9 +351,10 @@ const CategoryComponent = ({user,accessToken}) => {
                   <li><a class="dropdown-item" href="#"><i class="bi bi-folder"></i> Sample File</a></li>
                   <li><a class="dropdown-item" href="#"><i class="bi bi-folder-plus"></i> Upload File</a></li>
                 </ul>
-              </div>
+    </div>*/}
 
-              <button class="add-item btn btn-primary" id="openForm"><i class="bi bi-plus-circle"></i> Add Category</button>
+              <button class="add-item btn btn-primary"
+               id="openForm"><i class="bi bi-plus-circle"></i> Add Category</button>
             </div>
           </div>
 

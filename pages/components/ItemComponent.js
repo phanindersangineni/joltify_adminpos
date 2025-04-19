@@ -223,29 +223,43 @@ const ItemComponent = ({ user, accessToken }) => {
     const openButton = document.getElementById("openForm");
     const closeButton = document.getElementById("closeForm");
     const formContainer = document.getElementById("formContainer");
-
+  
+    const handleOpen = () => {
+      // Reset form when opening
+      setShowitemDetails(false);
+      setFormData({
+        name: "",
+        price: "",
+        category: "",
+        tax: "",
+        image: null,
+        item_type: "veg",
+        is_featured: "yes",
+        status: "active",
+        caution: "",
+        description: "",
+      });
+      setItemId(null); // Also reset item ID to ensure it's treated as "Add" not "Edit"
+      formContainer.classList.add("show");
+    };
+  
+    const handleClose = () => {
+      formContainer.classList.remove("show");
+    };
+  
     if (openButton && closeButton && formContainer) {
-      openButton.addEventListener("click", () => {
-        formContainer.classList.add("show");
-      });
-
-      closeButton.addEventListener("click", () => {
-        formContainer.classList.remove("show");
-      });
+      openButton.addEventListener("click", handleOpen);
+      closeButton.addEventListener("click", handleClose);
     }
-
+  
     return () => {
       if (openButton && closeButton) {
-        openButton.removeEventListener("click", () => {
-          formContainer.classList.add("show");
-        });
-
-        closeButton.removeEventListener("click", () => {
-          formContainer.classList.remove("show");
-        });
+        openButton.removeEventListener("click", handleOpen);
+        closeButton.removeEventListener("click", handleClose);
       }
     };
   }, []);
+  
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -265,7 +279,7 @@ const ItemComponent = ({ user, accessToken }) => {
   }
 
   const edititem = async(item) =>{
-   
+    setShowitemDetails(false);
     setItemId(item.id);
     setFormData(item);
     const openButton = document.getElementById("editForm");
@@ -321,16 +335,7 @@ const ItemComponent = ({ user, accessToken }) => {
                 </ul>
               </div>
 
-              <div class="btn-group">
-                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown"
-                  data-bs-display="static" aria-expanded="false">
-                  <i class="bi bi-box-arrow-in-down"></i> Import
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
-                  <li><a class="dropdown-item" href="#"><i class="bi bi-folder"></i> Sample File</a></li>
-                  <li><a class="dropdown-item" href="#"><i class="bi bi-folder-plus"></i> Upload File</a></li>
-                </ul>
-              </div>
+              
 
               <button class="add-item btn btn-primary" id="openForm"><i class="bi bi-plus-circle"></i> Add Item</button>
             </div>
@@ -368,11 +373,7 @@ const ItemComponent = ({ user, accessToken }) => {
                     </select>
                     {errors.category && <small className="text-danger">{errors.category}</small>}
                   </div>
-                  <div className="col-md-6">
-                    <label className="form-label">Tax percentage (Including)</label>
-                    <input type="number" name="tax" className="form-control" value={formData.tax} onChange={handleChange} />
-                 
-                  </div>
+                  
                 </div>
 
                 <div className="row mb-3">
