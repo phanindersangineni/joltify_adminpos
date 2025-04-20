@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "@/context/AuthContext";;
 import axios from "axios";
 import Swal from "sweetalert2";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;

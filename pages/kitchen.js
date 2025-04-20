@@ -7,7 +7,7 @@ import SidebarComponent from "./components/SideBarComponent";
 import ItemComponent from "./components/ItemComponent";
 import PosComponent from "./components/PosComponent";
 import { useRouter } from "next/router";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import KitchenComponent from "./components/KitchenComponent";
 
 

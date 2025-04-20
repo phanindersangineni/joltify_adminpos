@@ -5,8 +5,9 @@ import Head from "next/head";
 import NavBarComponent from "./components/NavBarComponent";
 import SidebarComponent from "./components/SideBarComponent";
 import CategoryComponent from "./components/CategoryComponent";
-import { useAuth } from "./AuthContext";
+
 import { useRouter } from "next/router";
+import { useAuth } from "@/context/AuthContext";
 
 const Category = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true); // Default sidebar open

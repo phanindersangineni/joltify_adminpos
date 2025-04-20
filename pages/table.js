@@ -5,7 +5,7 @@ import Head from "next/head";
 import NavBarComponent from "./components/NavBarComponent";
 import SidebarComponent from "./components/SideBarComponent";
 import TableComponent from "./components/TableComponent";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/router";
 
 

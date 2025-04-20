@@ -8,7 +8,7 @@ export const DEV = process.env.NEXT_PUBLIC_API_URL;
 const ItemViewComponent = ({singleitem}) => {
   const [activePopup, setActivePopup] = useState(null);
   const fileInputRef = useRef(null);
-  const [itempic,setItemPic] =useState(`${DEV}/items/files/${singleitem.image}`);
+  const [itempic,setItemPic] =useState(`${DEV}/items/files/${singleitem?.image}`);
   const [formData, setFormData] = useState({ name: "", price: "", attributes: "", status: "active" });
   const [variantlist,setVarianList] =useState([]);
   const [extralist,setExtraList] =useState([]);
@@ -472,7 +472,7 @@ const loadvariantlist = (objlist) => {
 
             <div className="tab-pane fade" id="images">
               <div className="image-container">
-                <img src={itempic} alt="slider" />
+               {itempic && <img src={itempic} alt="slider" /> }
                 <div className="righ">
                   <p>Size: (262px, 182px)</p>
                   <input

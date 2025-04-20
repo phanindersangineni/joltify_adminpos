@@ -1,10 +1,11 @@
 
+import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Swal from "sweetalert2";
-import { useAuth } from "./AuthContext";
+
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Home() {

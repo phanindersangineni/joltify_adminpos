@@ -41,13 +41,13 @@ const OddsComponent =({user, accessToken}) =>{
         <div class="preparing card">
             <h1>Preparing</h1>
             {preparedorders?.map((item, index) => (
-            <h2>{item.orderid}</h2>
+            <h2 key={index}>{item.orderid}</h2>
             ))}
         </div>
         <div class="start card">
             <h1>Ready</h1>
             {doneorders?.map((item, index) => (
-            <h2>{item.orderid}</h2>
+            <h2 key={index}>{item.orderid}</h2>
             ))}
         </div>
     </section>

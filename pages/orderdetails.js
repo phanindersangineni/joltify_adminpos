@@ -6,10 +6,10 @@ import NavBarComponent from "./components/NavBarComponent";
 import SidebarComponent from "./components/SideBarComponent";
 import OrdedetailsComponent from "./components/OrderdetailsComponent";
 import { useRouter } from "next/router";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 
-const orderdetails =() =>{
+const Orderdetails =() =>{
   const [isSidebarOpen, setSidebarOpen] = useState(true); // Default sidebar open
   const { user,accessToken, authloading } = useAuth();
   
@@ -66,4 +66,4 @@ const orderdetails =() =>{
     )
 }
 
-export default orderdetails
+export default Orderdetails

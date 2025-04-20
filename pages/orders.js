@@ -4,11 +4,11 @@ import PosOrderComponent from "./components/PosOrderComponent"
 import { useEffect, useState } from "react"
 import NavBarComponent from "./components/NavBarComponent";
 import SidebarComponent from "./components/SideBarComponent";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/router";
 
 
-const orders =() =>{
+const Orders =() =>{
   const [isSidebarOpen, setSidebarOpen] = useState(true); // Default sidebar open
   const { user,accessToken, authloading } = useAuth();
   const router = useRouter();
@@ -63,4 +63,4 @@ const orders =() =>{
     )
 }
 
-export default orders
+export default Orders

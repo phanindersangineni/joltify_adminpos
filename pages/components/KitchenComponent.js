@@ -1,4 +1,5 @@
 import axios from "axios";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
@@ -155,7 +156,7 @@ const KitchenComponent = ({ user, accessToken }) => {
     return (
         <section class="kds">
             <div class="header">
-             <span class="text-secondary"> <a href ="/orders"> Orders</a></span>
+             <span class="text-secondary"> <Link href ="/orders"> Orders</Link></span>
         </div>
             <div class="d-flex">
                 <div class="left">

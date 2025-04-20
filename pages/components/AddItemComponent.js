@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "@/context/AuthContext";;
 import Swal from "sweetalert2";
 
 

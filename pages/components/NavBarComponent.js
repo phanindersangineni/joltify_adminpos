@@ -1,9 +1,16 @@
 "use client";
 import { useState } from "react";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "@/context/AuthContext";;
+import { useRouter } from "next/router";
 
 const NavBarComponent = ({ toggleSidebar }) => {
-  const { user } = useAuth();
+  const { user,logout } = useAuth();
+  const router = useRouter();
+
+  const logoutUser =() =>{
+    logout();
+    router.push('/');
+  }
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-white fixed-top">
@@ -30,7 +37,7 @@ const NavBarComponent = ({ toggleSidebar }) => {
                   <hr className="dropdown-divider" />
                 </li>
                 <li><a className="dropdown-item" href="#"><i className="fas fa-key me-2"></i> Change Password</a></li>
-                <li><a className="dropdown-item text-danger" href="#"><i className="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                <li><a className="dropdown-item text-danger" href="" onClick={logoutUser}><i className="fas fa-sign-out-alt me-2"></i> Logout</a></li>
               </ul>
             </div>
           </div>

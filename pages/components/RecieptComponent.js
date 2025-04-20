@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import "./ReceiptComponent.css";
+
 import axios from "axios";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "@/context/AuthContext";
+//import { useAuth } from "@/context/AuthContext";;
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
 const overlayStyle = {
@@ -135,7 +136,7 @@ const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction,quantity}
             </thead>
             <tbody>
             {items?.map((item, index) => ( 
-              <tr>
+              <tr key={index}>
                 <td>{item?.quantity}</td>
                 <td>
                 {item?.name}

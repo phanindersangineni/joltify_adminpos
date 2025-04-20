@@ -200,29 +200,37 @@ const TableComponent = ({ user, accessToken }) => {
     const openButton = document.getElementById("openForm");
     const closeButton = document.getElementById("closeForm");
     const formContainer = document.getElementById("formContainer");
-
+  
+    const handleOpenForm = () => {
+      setFormData({
+        name: "",
+        sizeinfo: "",
+        tableno: "",
+        status: "active"
+      });
+      setErrors({});
+      setItemId(null);
+      setItemPic(null);
+      formContainer.classList.add("show");
+    };
+  
+    const handleCloseForm = () => {
+      formContainer.classList.remove("show");
+    };
+  
     if (openButton && closeButton && formContainer) {
-      openButton.addEventListener("click", () => {
-        formContainer.classList.add("show");
-      });
-
-      closeButton.addEventListener("click", () => {
-        formContainer.classList.remove("show");
-      });
+      openButton.addEventListener("click", handleOpenForm);
+      closeButton.addEventListener("click", handleCloseForm);
     }
-
+  
     return () => {
       if (openButton && closeButton) {
-        openButton.removeEventListener("click", () => {
-          formContainer.classList.add("show");
-        });
-
-        closeButton.removeEventListener("click", () => {
-          formContainer.classList.remove("show");
-        });
+        openButton.removeEventListener("click", handleOpenForm);
+        closeButton.removeEventListener("click", handleCloseForm);
       }
     };
   }, []);
+  
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -298,18 +306,10 @@ const TableComponent = ({ user, accessToken }) => {
                 </ul>
               </div>
 
-              <div class="btn-group">
-                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown"
-                  data-bs-display="static" aria-expanded="false">
-                  <i class="bi bi-box-arrow-in-down"></i> Import
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
-                  <li><a class="dropdown-item" href="#"><i class="bi bi-folder"></i> Sample File</a></li>
-                  <li><a class="dropdown-item" href="#"><i class="bi bi-folder-plus"></i> Upload File</a></li>
-                </ul>
-              </div>
+             
 
-              <button class="add-item btn btn-primary" id="openForm"><i class="bi bi-plus-circle"></i> Add Item</button>
+              <button class="add-item btn btn-primary" id="openForm">
+                <i class="bi bi-plus-circle"></i> Add Table</button>
             </div>
           </div>
 

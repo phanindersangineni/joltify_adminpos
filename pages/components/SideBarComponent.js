@@ -1,7 +1,8 @@
 "use client"; // Ensure it's a Client Component
 
 import { useEffect, useState } from "react";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "@/context/AuthContext";;
+import Link from "next/link";
 
 const SidebarComponent = ({ isOpen }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -35,80 +36,80 @@ const SidebarComponent = ({ isOpen }) => {
 
         <ul>
           <li>
-            <a
+            <Link
               href="/dashboards"
               className={activeLink === "/dashboards" ? "active" : ""}
               onClick={() => handleLinkClick("/dashboards")}
             >
               <i className="fas fa-th-large"></i> <span>Dashboard</span>
-            </a>
+            </Link>
           </li>
           <li>
 
-              <a href="/table">
+              <Link href="/table">
                 <i className="fas fa-table"></i> <span>Dining Tables</span>
-              </a>
+              </Link>
             </li>
             <li>
 
-              <a href="/category">
+              <Link href="/category">
                 <i className="fas fa-table"></i> <span>Category</span>
-              </a>
+              </Link>
             </li>
           <li>
             
-            <a
+            <Link
               href="/items"
               className={activeLink === "/items" ? "active" : ""}
               onClick={() => handleLinkClick("/items")}
             >
               <i className="fas fa-utensils"></i> <span>Items</span>
-            </a>
+            </Link>
           </li>
           <li>
 
-            <a href="/users">
+            <Link href="/users">
               <i className="fas fa-table"></i> <span>Users</span>
-            </a>
+            </Link>
           </li>
 
 
 
        {user?.roleid =='ROLE_ADMIN' &&   <li>
 
-            <a href="/restaurant">
+            <Link href="/restaurant">
               <i className="fas fa-table"></i> <span>Restaurant</span>
-            </a>
+            </Link>
           </li> }
 
           <li className="sidebar-heading">POS & ORDERS</li>
           <li>
-            <a href="/pos">
+            <Link href="/pos">
               <i className="fas fa-desktop"></i> <span>POS</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/orders">
+            <Link href="/orders">
               <i className="fas fa-receipt"></i> <span>Orders</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/kitchen">
+            <Link href="/kitchen">
               <i className="fas fa-receipt"></i> <span>Kitchen Orders</span>
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/odds">
+            <Link href="/odds">
               <i className="fas fa-receipt"></i> <span>Order Display</span>
-            </a>
+            </Link>
           </li>
 
-          <li className="sidebar-heading">PROMO</li>
+        {/*}  <li className="sidebar-heading">PROMO</li>
           <li>
-            <a href="#">
+            <Link href="#">
               <i className="fas fa-tags"></i> <span>Offers</span>
-            </a>
-          </li>
+            </Link>
+  </li>*/}
         </ul>
       </div>
     </>

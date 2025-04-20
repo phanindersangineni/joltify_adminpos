@@ -132,7 +132,7 @@ const PosComponent  =({user, accessToken}) =>{
     }, [searchTerm]);
 
     const selectcutomerdropdown= (data)=>{
-
+        document.getElementById('addcustomer').style.display ='none';
         const setdata ={
             name:data.name,
             mobileno:data.phone
@@ -233,7 +233,7 @@ const PosComponent  =({user, accessToken}) =>{
                     <option>Loading...</option>
                 ) : (
                     customers.map((customer) => (
-                        <option value={customer.mobileno}>{customer.name}</option>
+                        <option key={customer.mobileno} value={customer.mobileno}>{customer.name}</option>
                     ))
                 )}
             </select>
