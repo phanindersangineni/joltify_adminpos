@@ -1,90 +1,126 @@
-
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #ffffff, #87CEEB);
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+    background: linear-gradient(-45deg, #f6d8ff, #cce3ff, #ffdbe7, #d6f5f2);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
 }
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     width: 100%;
     max-width: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
 .login-box {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 35px 30px;
+    border-radius: 16px;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
     width: 100%;
+    text-align: center;
+    box-sizing: border-box;
 }
+
 h2 {
-    color: #1e3c72;
-    font-size: 26px;
-    margin-bottom: 30px;
-    animation: colorFlow 3s infinite alternate;
+    color: #6a359c;
+    font-size: 28px;
+    margin-bottom: 25px;
+    animation: colorPulse 3s ease-in-out infinite;
 }
-@keyframes colorFlow {
-    0% { color: #1e3c72; }
-    50% { color: #4682B4; }
-    100% { color: #2a5298; }
+
+@keyframes colorPulse {
+    0% { color: #6a359c; }
+    50% { color: #9b59b6; }
+    100% { color: #6a359c; }
 }
+
 .input-box {
     position: relative;
-    margin: 20px 0;
+    margin: 18px 0;
     width: 100%;
 }
+
 .input-box input {
-    width: calc(100% - 40px);
-    padding: 12px 12px 12px 40px;
-    border: 1px solid #1e3c72;
-    border-radius: 5px;
+    width: 100%;
+    padding: 12px 12px 12px 38px;
+    border: 1px solid #dab6f7;
+    border-radius: 6px;
     outline: none;
-    font-size: 16px;
+    font-size: 15px;
     background: #ffffff;
+    color: #4a005f;
+    box-sizing: border-box;
+    transition: 0.2s ease;
 }
+
+.input-box input:focus {
+    border-color: #b882d0;
+    box-shadow: 0 0 6px rgba(186, 133, 215, 0.4);
+}
+
 .input-box i {
     position: absolute;
-    left: 10px;
+    left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #1e3c72;
+    color: #b882d0;
+    font-size: 16px;
 }
+
 .input-box .eye-icon {
-    right: 10px;
+    right: 12px;
     left: auto;
     cursor: pointer;
 }
+
 .remember-forgot {
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 14px;
-    color: #1e3c72;
-    margin-bottom: 30px;
+    color: #5e3e8c;
+    margin-bottom: 25px;
 }
+
 .remember-forgot label {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
 }
+
 .login-btn {
     width: 100%;
     padding: 12px;
     border: none;
     border-radius: 6px;
     font-size: 16px;
-    background: #4682B4;
+    background: #9b59b6;
     color: white;
     cursor: pointer;
-    transition: 0.3s;
+    transition: background 0.3s ease;
 }
+
 .login-btn:hover {
-    background: #2a5298;
+    background: #7f3c9b;
 }
