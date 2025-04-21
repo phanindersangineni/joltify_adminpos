@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
 const CategoryComponent = ({user,accessToken}) => {
-  const itemsPerPage = 10;
+ 
   const [itemlist, setItemlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showitemdetail,setShowitemDetails] =useState(false);
@@ -15,6 +15,8 @@ const CategoryComponent = ({user,accessToken}) => {
   const[filedata,setFileData] =useState(null);
   const [itempic,setItemPic] =useState(null);
   const isFirstLoad = useRef(true);
+  const [filteritemlist, setFilteritemList] = useState([]);
+  const [itemsPerPage,setItemsPerPage] =useState(10);
   
   useEffect(() => {
     if (isFirstLoad.current) {
@@ -51,6 +53,7 @@ const CategoryComponent = ({user,accessToken}) => {
      console.log(user);
     const response = await axios.get(`${DEV}/joltify/categories/search/${user?.user_id}`, { headers });
     setItemlist(response.data.data);
+    setFilteritemList(response.data.data);
     setLoading(false);
   };
   const [filters, setFilters] = useState({
@@ -76,17 +79,17 @@ const CategoryComponent = ({user,accessToken}) => {
       );
     });
 
-    setItemlist(filtered);
+    setFilteritemList(filtered);
   };
 
   // Reset Filter
   const handleReset = () => {
     setFilters({
-      name: null,
-      status: null,
+      name: '',
+      status: '',
     });
 
-    setFilteredItems(items);
+    setFilteritemList(itemlist);
   };
 
   const [formData, setFormData] = useState({
@@ -109,7 +112,15 @@ const CategoryComponent = ({user,accessToken}) => {
   // Validate Form
   const validateForm = () => {
     let newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Name is required.";
+   // if (!formData.name.trim()) newErrors.name = "Name is required.";
+
+   // Name validation: checks if it's required and does not contain special characters
+   const nameRegex = /^[A-Za-z0-9\s]+$/; // Allows only alphanumeric characters and spaces
+   if (!formData.name.trim()) {
+     newErrors.name = "Name is required.";
+   } else if (!nameRegex.test(formData.name.trim())) {
+     newErrors.name = "Name cannot contain special characters.";
+   }
      
     if(filedata ==null && itempic==null )newErrors.filename ="Please upload file"
 
@@ -268,9 +279,9 @@ const CategoryComponent = ({user,accessToken}) => {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(itemlist.length / itemsPerPage);
+  const totalPages = Math.ceil(filteritemlist.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const displayedItems = itemlist.slice(startIndex, startIndex + itemsPerPage);
+  const displayedItems = filteritemlist.slice(startIndex, startIndex + itemsPerPage);
 
   const changePage = (page) => {
     if (page < 1 || page > totalPages) return;
@@ -319,8 +330,8 @@ const CategoryComponent = ({user,accessToken}) => {
                   10
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
-                  <li><a class="dropdown-item" href="#">1</a></li>
-                  <li><a class="dropdown-item" href="#">2</a></li>
+                  <li><a class="dropdown-item"  onClick={()=>setItemsPerPage(20)}>20</a></li>
+                  <li><a class="dropdown-item"  onClick={()=>setItemsPerPage(50)}>50</a></li>
                 </ul>
               </div>
 

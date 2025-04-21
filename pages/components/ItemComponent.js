@@ -5,17 +5,20 @@ import Swal from "sweetalert2";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
 const ItemComponent = ({ user, accessToken }) => {
-  const itemsPerPage = 5;
+ // const itemsPerPage = 5;
   const [itemlist, setItemlist] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showitemdetail,setShowitemDetails] =useState(false);
   const [itemid,setItemId] =useState(null);
   const[categories,setCategories] =useState([]);
-  
+  const [filteredlist,setFilteredList] =useState([]);
+  const [itemsPerPage,setItemsPerPage] =useState(10);
 
   useEffect(() => {
     loaditems();
   }, []);
+
+ 
 
   useEffect(() => {
       
@@ -42,6 +45,7 @@ const ItemComponent = ({ user, accessToken }) => {
      
     const response = await axios.get(`${DEV}/joltify/items/search/${user.user_id}`, { headers });
     setItemlist(response.data.data);
+    setFilteredList(response.data.data);
 
     const categoryresponse = await axios.get(`${DEV}/joltify/categories/search/${user.user_id}`, { headers });
     
@@ -71,6 +75,7 @@ const ItemComponent = ({ user, accessToken }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     setItemId(null);
+   
     let filtered = itemlist.filter((item) => {
       return (
         (filters.name ? item.name.toLowerCase().includes(filters.name.toLowerCase()) : true) &&
@@ -83,22 +88,21 @@ const ItemComponent = ({ user, accessToken }) => {
       );
     });
 
-    setItemlist(filtered);
+    setFilteredList(filtered);
   };
 
   // Reset Filter
   const handleReset = () => {
     setFilters({
-      name: null,
-      price: null,
-      category: null,
-      tax: null,
-      itemType: null,
-      isFeatured: null,
-      status: null,
+      name: '',
+      price: '',
+      category: '',
+      itemType: '',
+      isFeatured: '',
+      status: '',
     });
-
-    setFilteredItems(items);
+    
+    setFilteredList(itemlist);
   };
 
   const [formData, setFormData] = useState({
@@ -128,10 +132,27 @@ const ItemComponent = ({ user, accessToken }) => {
   // Validate Form
   const validateForm = () => {
     let newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Name is required.";
-    if (!formData.price) newErrors.price = "Price is required.";
-    if (!formData.category) newErrors.category = "Category is required.";
-
+  
+    // Name validation: checks if it's required and does not contain special characters
+    const nameRegex = /^[A-Za-z0-9\s]+$/; // Allows only alphanumeric characters and spaces
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required.";
+    } else if (!nameRegex.test(formData.name.trim())) {
+      newErrors.name = "Name cannot contain special characters.";
+    }
+  
+    // Price validation: checks if it's required and a valid number with two decimals
+    if (!formData.price) {
+      newErrors.price = "Price is required.";
+    } else if (isNaN(formData.price) || parseFloat(formData.price).toFixed(2) !== formData.price) {
+      newErrors.price = "Price must be a valid number with two decimal places.";
+    }
+  
+    // Category validation: checks if it's required
+    if (!formData.category) {
+      newErrors.category = "Category is required.";
+    }
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -227,6 +248,7 @@ const ItemComponent = ({ user, accessToken }) => {
     const handleOpen = () => {
       // Reset form when opening
       setShowitemDetails(false);
+      setErrors({});
       setFormData({
         name: "",
         price: "",
@@ -263,9 +285,9 @@ const ItemComponent = ({ user, accessToken }) => {
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const totalPages = Math.ceil(itemlist.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredlist.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const displayedItems = itemlist.slice(startIndex, startIndex + itemsPerPage);
+  const displayedItems = filteredlist.slice(startIndex, startIndex + itemsPerPage);
 
   const changePage = (page) => {
     if (page < 1 || page > totalPages) return;
@@ -309,11 +331,11 @@ const ItemComponent = ({ user, accessToken }) => {
               <div class="btn-group">
                 <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown"
                   data-bs-display="static" aria-expanded="false">
-                  10
+                  {itemsPerPage}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
-                  <li><a class="dropdown-item" href="#">1</a></li>
-                  <li><a class="dropdown-item" href="#">2</a></li>
+                  <li><a class="dropdown-item"  onClick={()=>setItemsPerPage(20)}>20</a></li>
+                  <li><a class="dropdown-item"  onClick={()=>setItemsPerPage(50)}>50</a></li>
                 </ul>
               </div>
 
@@ -351,12 +373,12 @@ const ItemComponent = ({ user, accessToken }) => {
                 <div className="row my-3">
                   <div className="col-md-6">
                     <label className="form-label">Name *</label>
-                    <input type="text" name="name" className="form-control" value={formData.name} onChange={handleChange} />
+                    <input type="text" name="name" maxLength={255} className="form-control" value={formData.name} onChange={handleChange} />
                     {errors.name && <small className="text-danger">{errors.name}</small>}
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">Price *</label>
-                    <input type="number" name="price" className="form-control" value={formData.price} onChange={handleChange} />
+                    <input type="number" name="price" maxLength={5} className="form-control" value={formData.price} onChange={handleChange} />
                     {errors.price && <small className="text-danger">{errors.price}</small>}
                   </div>
                 </div>
@@ -459,12 +481,7 @@ const ItemComponent = ({ user, accessToken }) => {
                       </>))}
                     </select>
                   </div>
-                  <div className="col-md-3">
-                    <label>TAX</label>
-                    <input type="number" name="tax" className="form-control custom-input"
-                     placeholder="Enter name" value={filters.tax} onChange={handleFilterChange} />
                   
-                  </div>
                 </div>
 
                 <div className="row mt-3">
@@ -472,24 +489,24 @@ const ItemComponent = ({ user, accessToken }) => {
                     <label>ITEM TYPE</label>
                     <select name="itemType" className="form-select custom-select" value={filters.itemType} onChange={handleFilterChange}>
                       <option value="">--</option>
-                      <option value="Product">Product</option>
-                      <option value="Service">Service</option>
+                      <option value="veg">Veg</option>
+                      <option value="nonVeg">NonVeg</option>
                     </select>
                   </div>
                   <div className="col-md-3">
                     <label>IS FEATURED</label>
                     <select name="isFeatured" className="form-select custom-select" value={filters.isFeatured} onChange={handleFilterChange}>
                       <option value="">--</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
                     </select>
                   </div>
                   <div className="col-md-3">
                     <label>STATUS</label>
                     <select name="status" className="form-select custom-select" value={filters.status} onChange={handleFilterChange}>
                       <option value="">--</option>
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
                     </select>
                   </div>
                   <div className="col-md-12 my-4 d-flex align-items-end">
@@ -513,6 +530,8 @@ const ItemComponent = ({ user, accessToken }) => {
                 <th>Name</th>
                 <th>Category</th>
                 <th>Price</th>
+                <th>Item Type</th>
+                <th>Is Featured</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
@@ -523,6 +542,8 @@ const ItemComponent = ({ user, accessToken }) => {
                   <td className="border px-4 py-2">{item.name}</td>
                   <td className="border px-4 py-2">{item.categoryname}</td>
                   <td className="border px-4 py-2">{item.price}</td>
+                  <td className="border px-4 py-2">{item.item_type}</td>
+                  <td className="border px-4 py-2">{item.is_featured}</td>
                   <td className="border px-4 py-2">{item.status}</td>
                   <td class="actions">
                             <a onClick={()=>viewItems(item)} class="tooltip-container">

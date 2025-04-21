@@ -1,0 +1,78 @@
+@media print {
+    /* Hide all content by default */
+    body * {
+      visibility: hidden;
+    }
+  
+    /* Make only the printable receipt content visible */
+    .printable-receipt, .printable-receipt * {
+      visibility: visible;
+    }
+  
+    /* Adjust the receipt's layout for thermal printing (80mm width) */
+    body {
+      width: 80mm; /* For thermal printers (adjust width if needed) */
+      margin: 0;
+      font-family: 'Courier New', monospace; /* Monospace font */
+      font-size: 10px;
+      line-height: 1.4; /* Adjust line height */
+      padding: 0;
+    }
+  
+    /* Specific styles for printable-receipt */
+    .printable-receipt {
+      padding: 10px;
+      width: 100%;
+      font-size: 10px;
+      word-wrap: break-word;
+      box-sizing: border-box; /* Ensure content fits within the print width */
+    }
+  
+    .printable-receipt h1, .printable-receipt p {
+      overflow-wrap: break-word;
+    }
+  
+    /* Receipt content styling */
+    .header, .footer {
+      text-align: center;
+      font-size: 10px;
+      margin-bottom: 5px;
+    }
+  
+    .items {
+      margin-top: 10px;
+    }
+  
+    .items table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+  
+    .items td, .items th {
+      padding: 5px;
+      font-size: 9px; /* Adjust item font size */
+      text-align: left;
+    }
+  
+    /* Adjustments for totals section */
+    .totals {
+      margin-top: 10px;
+      font-size: 10px;
+    }
+  
+    .totals .float-end {
+      float: right;
+    }
+  
+    /* Optional: Footer margins */
+    .footer p {
+      margin-top: 10px;
+      font-size: 9px;
+    }
+  
+    /* Hide unnecessary elements during print */
+    .btn-container, .overlay, .header {
+      display: none;
+    }
+  }
+  

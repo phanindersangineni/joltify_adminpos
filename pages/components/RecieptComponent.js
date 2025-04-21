@@ -97,10 +97,11 @@ const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction,quantity}
           <button className="btn1" onClick={closeReceipt}>
             <i className="bi bi-chevron-left"></i> Close
           </button>
-          <button className="btn1 btn1-print">
+          <button onClick={() => window.print()} className="btn1 btn1-print">
             <i className="fas fa-print"></i> Print Invoice
           </button>
         </div>
+        <div className="printable-receipt">
         <div className="header mt-2">
           <p>{order?.restaurantname} </p>
          
@@ -194,6 +195,7 @@ const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction,quantity}
             Powered by Joltify 
             
           </p>
+        </div>
         </div>
       </div>
     </div>
