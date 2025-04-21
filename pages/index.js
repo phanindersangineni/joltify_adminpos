@@ -5,6 +5,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Swal from "sweetalert2";
+// import logo from '../public/assets/images/logo.png'
 
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
@@ -54,20 +55,20 @@ export default function Home() {
       console.log("Form is valid, making API call...");
 
       try {
-       
+
         const response = await axios.post(`${DEV}/joltify/user/login`, formData);
 
-       console.log(response.data.data);
+        console.log(response.data.data);
         if (response.data.data == 'SUCCESS') {
 
           let resdata = response.data.message;
           await localStorage.setItem('posuser', JSON.stringify(resdata.user));
-          
+
           await localStorage.setItem('posaccesstoken', resdata.accessToken);
           document.cookie = `postoken=${resdata.accessToken}; path=/;`;
-         console.log(resdata.user);
+          console.log(resdata.user);
           login(resdata.user, resdata.accessToken);
-          
+
           Swal.fire({
             text: 'Login Successful',
             icon: 'success',
@@ -76,7 +77,7 @@ export default function Home() {
           });
           window.dispatchEvent(new Event("loginsuccess"));
           router.push(`/dashboards`);
-  
+
         } else if (response.data.data == 'USER_NOT_FOUND') {
           Swal.fire({
             text: 'User does not exists, kindly register',
@@ -84,7 +85,7 @@ export default function Home() {
             timer: 3000, // The alert will automatically close after 3 seconds
             showConfirmButton: true, // Hide the confirm button
           });
-  
+
         } else if (response.data.data == 'INVALIDPASSWORD') {
           Swal.fire({
             text: 'Please enter a valid password',
@@ -92,9 +93,9 @@ export default function Home() {
             timer: 3000, // The alert will automatically close after 3 seconds
             showConfirmButton: true, // Hide the confirm button
           });
-  
+
         }
-  
+
         else {
           Swal.fire({
             text: 'Failed to login',
@@ -104,7 +105,7 @@ export default function Home() {
           });
         }
 
-        
+
 
 
         console.log("Login successful!");
@@ -128,7 +129,11 @@ export default function Home() {
       </Head>
 
       <div className="container">
+
         <div className="login-box">
+          <div className="">
+            <img src='/assets/images/logo.png'></img>
+          </div>
           <h2>Welcome Back</h2>
           <form onSubmit={handleSubmit}>
             {/* Email Field */}
@@ -160,7 +165,7 @@ export default function Home() {
             </div>
 
             {/* Remember Me & Forgot Password */}
-            
+
 
             {/* Submit Button */}
             <button type="submit" className="login-btn">Login</button>
