@@ -1117,7 +1117,7 @@
 /* -------------------pos ------------------ */
 
 .pos {
-    /* margin-left: 250px; */
+    margin-left: 250px;
     margin-top: 80px;
     transition: all 0.3s;
     padding: 20px;
@@ -2780,15 +2780,6 @@
 }
 
 
-@media (max-width: 991px) and (min-width: 768px) {
-    .popup-content {
-        width: 0%;
-    }
-
-    .popup-content .form-group {
-        width: 10%;
-    }
-}
 
 @media (max-width: 767px) {
 
@@ -3228,51 +3219,8 @@
         justify-content: center;
     }
 
-
-    .kds {
-        padding: 20px;
-
-        .left {
-            width: 100%;
-            margin-right: 0;
-            margin-bottom: 20px;
-        }
-
-        .second-section {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .order-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .collapseElement {
-            max-height: 600px;
-        }
-    }
-
-    .oss {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-
-        .card {
-            width: 80%;
-            height: auto;
-
-            h1 {
-                font-size: 18px;
-            }
-        }
-    }
-
-    .kds {
-        padding: 16px;
-    }
+    
+    
 }
 
 
@@ -3344,5 +3292,10 @@
     .kds {
         padding: 12px;
         margin-top: 60px;
+    }
+
+    .dashboard-items #formContainer {
+        width: 100%;
+        border-radius: 0;
     }
 }
