@@ -2221,6 +2221,10 @@
 .kds {
     padding: 25px;
 
+    .section3 {
+        display: flex;
+    }
+
     .left {
         width: 30%;
         margin-right: 20px;
@@ -2735,6 +2739,15 @@
 
     .kds {
         padding: 20px;
+        margin-top: 10px;
+
+        .section3 {
+            display: block;
+        }
+
+        .header {
+            margin: 20px 0;
+        }
 
         .left {
             width: 100%;
@@ -2777,11 +2790,73 @@
     .kds {
         padding: 16px;
     }
+
+    .dashboard-items table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .dashboard-items thead,
+    .dashboard-items tbody,
+    .dashboard-items th,
+    .dashboard-items td,
+    .dashboard-items tr {
+        white-space: nowrap;
+    }
+
+    .dashboard-items .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .dashboard-items .buttons {
+        flex-wrap: wrap;
+    }
+
+    .dashboard-items .add-item {
+        margin-top: 10px;
+    }
+
+    .dashboard-items .table-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .dashboard-items .filter-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .dashboard-items .filter-container .custom-input,
+    .dashboard-items .filter-container .custom-select {
+        width: 100%;
+    }
+
+    .dashboard-items .actions {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+        justify-content: center;
+    }
 }
 
 
 
 @media (max-width: 767px) {
+
+    
+.posorderview {
+    .order-header {
+        gap: 10px;
+        display: block;
+        justify-content: space-between;
+        align-items: end;
+        padding: 15px;
+    }
+}
 
     .sidebar {
         width: 100%;
@@ -3035,6 +3110,11 @@
         }
     }
 
+    .kds {
+        .d-flex {
+            display: block;
+        }
+    }
 
     .pos {
         .pop-content {
