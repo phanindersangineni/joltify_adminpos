@@ -158,7 +158,7 @@ const KitchenComponent = ({ user, accessToken }) => {
             <div class="header">
              <span class="text-secondary"> <Link href ="/orders"> Orders</Link></span>
         </div>
-            <div class="d-flex">
+            <div class="section3">
                 <div class="left">
                     <div class="card">
                         <div class="top"><h3>Items Board</h3></div>
