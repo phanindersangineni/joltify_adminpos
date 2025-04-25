@@ -1112,7 +1112,138 @@
 }
 
 
+.modal-wrapper {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
 
+    &.show {
+        display: flex;
+    }
+
+    &.hide {
+        display: none;
+    }
+
+    .modal-box {
+        background: #fff;
+        border-radius: 8px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+        overflow: hidden;
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+
+            .modal-title {
+                margin: 0;
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .modal-close {
+                font-size: 20px;
+                cursor: pointer;
+
+                &:hover {
+                    color: #007BFF;
+                }
+            }
+        }
+
+        .modal-form {
+            padding: 20px;
+
+            .form-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+
+                .form-group {
+                    display: flex;
+                    flex-direction: column;
+                    width: 48%;
+
+                    &.full-width {
+                        width: 100%;
+                    }
+
+                    label {
+                        font-size: 14px;
+                        margin-bottom: 5px;
+                    }
+
+                    input,
+                    select {
+                        padding: 6px 10px;
+                        border: 1px solid #ccc;
+                        border-radius: 5px;
+                    }
+                }
+
+                .radio-group {
+                    display: flex;
+                    gap: 15px;
+
+                    label {
+                        display: flex;
+                        align-items: center;
+                        gap: 5px;
+                    }
+                }
+            }
+
+            .modal-actions {
+                margin-top: 20px;
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+
+                .btn {
+                    padding: 6px 15px;
+                    border-radius: 5px;
+                    font-size: 14px;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+
+                    &.btn-outline {
+                        background: transparent;
+                        border: 1px solid #ccc;
+                        color: #333;
+
+                        &:hover {
+                            background: #f0f0f0;
+                        }
+                    }
+
+                    &.btn-primary {
+                        background: #007BFF;
+                        color: #fff;
+                        border: none;
+
+                        &:hover {
+                            background: #0056b3;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 /* -------------------pos ------------------ */
 
@@ -2484,6 +2615,53 @@
     }
 }
 
+/* Tablets (up to 992px) */
+@media (max-width: 992px) {
+    .dashboard-items {
+        margin-top: 20px;
+
+        .top-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .buttons {
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .table-footer {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .pagination {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .actions i {
+            font-size: 14px;
+            padding: 6px;
+        }
+
+        #formContainer {
+            width: 100%;
+            right: -100%;
+        }
+
+        #formContainer.show {
+            right: 0;
+        }
+    }
+
+    .table {
+        min-width: 600px;
+      }
+}
 
 
 @media (max-width: 991px) {
@@ -2573,6 +2751,46 @@
 
             .sales-summary-container {
                 margin: 10px auto;
+            }
+        }
+    }
+
+    .modal-wrapper {
+        padding: 15px;
+
+        .modal-box {
+            max-width: 90%;
+
+            .modal-form {
+                .form-row {
+                    gap: 12px;
+
+                    .form-group {
+                        width: 100%;
+                    }
+                }
+
+                .modal-actions {
+                    flex-direction: column;
+                    align-items: stretch;
+
+                    .btn {
+                        width: 100%;
+                        justify-content: center;
+                    }
+                }
+            }
+
+            .modal-header {
+                padding: 12px 16px;
+
+                .modal-title {
+                    font-size: 16px;
+                }
+
+                .modal-close {
+                    font-size: 18px;
+                }
             }
         }
     }
@@ -2791,55 +3009,18 @@
         padding: 16px;
     }
 
-    .dashboard-items table {
-        display: block;
-        width: 100%;
-        overflow-x: auto;
+
+    .popup-content {
+        max-width: 95%;
     }
 
-    .dashboard-items thead,
-    .dashboard-items tbody,
-    .dashboard-items th,
-    .dashboard-items td,
-    .dashboard-items tr {
-        white-space: nowrap;
-    }
-
-    .dashboard-items .top-bar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .dashboard-items .buttons {
-        flex-wrap: wrap;
-    }
-
-    .dashboard-items .add-item {
-        margin-top: 10px;
-    }
-
-    .dashboard-items .table-footer {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .dashboard-items .filter-container {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .dashboard-items .filter-container .custom-input,
-    .dashboard-items .filter-container .custom-select {
+    .popup-content .form-group {
         width: 100%;
     }
 
-    .dashboard-items .actions {
-        display: flex;
-        flex-direction: row;
-        gap: 5px;
-        justify-content: center;
+    .popup-content form {
+        flex-direction: column;
+        align-items: stretch;
     }
 }
 
@@ -2864,6 +3045,7 @@
         z-index: 888;
         top: 75px;
     }
+
     .navbar {
         padding: 0.4rem 1rem;
 
@@ -2950,6 +3132,27 @@
             .sales-summary-container {
                 margin: 10px auto;
             }
+        }
+    }
+
+    .modal-wrapper {
+        padding: 10px;
+
+        .modal-box {
+            max-width: 100%;
+            border-radius: 6px;
+
+          
+
+            .modal-form {
+                .form-row {
+                  flex-direction: column;
+        
+                  .form-group {
+                    width: 100% !important;
+                  }
+                }
+              }
         }
     }
 
@@ -3299,8 +3502,8 @@
         justify-content: center;
     }
 
-    
-    
+
+
 }
 
 

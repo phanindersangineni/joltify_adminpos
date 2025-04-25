@@ -5,27 +5,27 @@ import Swal from "sweetalert2";
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
 const ItemComponent = ({ user, accessToken }) => {
- // const itemsPerPage = 5;
+  // const itemsPerPage = 5;
   const [itemlist, setItemlist] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showitemdetail,setShowitemDetails] =useState(false);
-  const [itemid,setItemId] =useState(null);
-  const[categories,setCategories] =useState([]);
-  const [filteredlist,setFilteredList] =useState([]);
-  const [itemsPerPage,setItemsPerPage] =useState(10);
+  const [showitemdetail, setShowitemDetails] = useState(false);
+  const [itemid, setItemId] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [filteredlist, setFilteredList] = useState([]);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     loaditems();
   }, []);
 
- 
+
 
   useEffect(() => {
-      
+
     const reloaditems = async () => {
-      
+
       loaditems();
-    
+
     };
 
     window.addEventListener("reloadlist", reloaditems);
@@ -42,13 +42,13 @@ const ItemComponent = ({ user, accessToken }) => {
       "X-Frame-Options": "SAMEORIGIN",
       token: accessToken,
     };
-     
+
     const response = await axios.get(`${DEV}/joltify/items/search/${user.user_id}`, { headers });
     setItemlist(response.data.data);
     setFilteredList(response.data.data);
 
     const categoryresponse = await axios.get(`${DEV}/joltify/categories/search/${user.user_id}`, { headers });
-    
+
     setCategories(categoryresponse.data.data);
 
 
@@ -75,7 +75,7 @@ const ItemComponent = ({ user, accessToken }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     setItemId(null);
-   
+
     let filtered = itemlist.filter((item) => {
       return (
         (filters.name ? item.name.toLowerCase().includes(filters.name.toLowerCase()) : true) &&
@@ -101,7 +101,7 @@ const ItemComponent = ({ user, accessToken }) => {
       isFeatured: '',
       status: '',
     });
-    
+
     setFilteredList(itemlist);
   };
 
@@ -132,7 +132,7 @@ const ItemComponent = ({ user, accessToken }) => {
   // Validate Form
   const validateForm = () => {
     let newErrors = {};
-  
+
     // Name validation: checks if it's required and does not contain special characters
     const nameRegex = /^[A-Za-z0-9\s]+$/; // Allows only alphanumeric characters and spaces
     if (!formData.name.trim()) {
@@ -140,19 +140,19 @@ const ItemComponent = ({ user, accessToken }) => {
     } else if (!nameRegex.test(formData.name.trim())) {
       newErrors.name = "Name cannot contain special characters.";
     }
-  
+
     // Price validation: checks if it's required and a valid number with two decimals
     if (!formData.price) {
       newErrors.price = "Price is required.";
     } else if (isNaN(formData.price) || parseFloat(formData.price).toFixed(2) !== formData.price) {
       newErrors.price = "Price must be a valid number with two decimal places.";
     }
-  
+
     // Category validation: checks if it's required
     if (!formData.category) {
       newErrors.category = "Category is required.";
     }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -166,19 +166,19 @@ const ItemComponent = ({ user, accessToken }) => {
     console.log("Submitting Form Data:", formData);
 
     try {
-     
-      const saveredata ={
-        name:formData.name,
-        price:formData.price,
-        category:formData.category,
-        tax:formData.tax,
-        image:null,
-        is_featured:formData.is_featured,
-        item_type:formData.item_type,
-        status:formData.status,
-        caution:formData.caution,
-        description:formData.description,
-        createdby:user.user_id
+
+      const saveredata = {
+        name: formData.name,
+        price: formData.price,
+        category: formData.category,
+        tax: formData.tax,
+        image: null,
+        is_featured: formData.is_featured,
+        item_type: formData.item_type,
+        status: formData.status,
+        caution: formData.caution,
+        description: formData.description,
+        createdby: user.user_id
 
       }
       // Simulating API call
@@ -189,16 +189,16 @@ const ItemComponent = ({ user, accessToken }) => {
         token: accessToken,
       };
       console.log(saveredata);
-     let response ={};
-      
-      if(itemid ==null){
-  
-      response = await axios.post(`${DEV}/joltify/items`,saveredata, { headers });
-      }else{
-         response = await axios.put(`${DEV}/joltify/items/${itemid}`,saveredata, { headers });
-       
+      let response = {};
+
+      if (itemid == null) {
+
+        response = await axios.post(`${DEV}/joltify/items`, saveredata, { headers });
+      } else {
+        response = await axios.put(`${DEV}/joltify/items/${itemid}`, saveredata, { headers });
+
       }
-      if(response.data.data.id){
+      if (response.data.data.id) {
         Swal.fire({
           text: 'Item added Successful',
           icon: 'success',
@@ -206,13 +206,13 @@ const ItemComponent = ({ user, accessToken }) => {
           showConfirmButton: false, // Hide the confirm button
         });
         loaditems();
-       // const openButton = document.getElementById("openForm");
+        // const openButton = document.getElementById("openForm");
         //const closeButton = document.getElementById("closeForm");
         const formContainer = document.getElementById("formContainer");
 
         formContainer.classList.remove("show");
-    
-      }else if(response.data.data =='SUCCESS'){
+
+      } else if (response.data.data == 'SUCCESS') {
         Swal.fire({
           text: 'Item updated Successful',
           icon: 'success',
@@ -220,13 +220,13 @@ const ItemComponent = ({ user, accessToken }) => {
           showConfirmButton: false, // Hide the confirm button
         });
         loaditems();
-       // const openButton = document.getElementById("openForm");
+        // const openButton = document.getElementById("openForm");
         //const closeButton = document.getElementById("closeForm");
         const formContainer = document.getElementById("formContainer");
 
         formContainer.classList.remove("show");
       }
-      else{
+      else {
         Swal.fire({
           text: 'Failed to add item',
           icon: 'success',
@@ -234,7 +234,7 @@ const ItemComponent = ({ user, accessToken }) => {
           showConfirmButton: false, // Hide the confirm button
         });
       }
-      
+
     } catch (error) {
       console.error("Submission failed:", error);
     }
@@ -244,7 +244,7 @@ const ItemComponent = ({ user, accessToken }) => {
     const openButton = document.getElementById("openForm");
     const closeButton = document.getElementById("closeForm");
     const formContainer = document.getElementById("formContainer");
-  
+
     const handleOpen = () => {
       // Reset form when opening
       setShowitemDetails(false);
@@ -264,16 +264,16 @@ const ItemComponent = ({ user, accessToken }) => {
       setItemId(null); // Also reset item ID to ensure it's treated as "Add" not "Edit"
       formContainer.classList.add("show");
     };
-  
+
     const handleClose = () => {
       formContainer.classList.remove("show");
     };
-  
+
     if (openButton && closeButton && formContainer) {
       openButton.addEventListener("click", handleOpen);
       closeButton.addEventListener("click", handleClose);
     }
-  
+
     return () => {
       if (openButton && closeButton) {
         openButton.removeEventListener("click", handleOpen);
@@ -281,7 +281,7 @@ const ItemComponent = ({ user, accessToken }) => {
       }
     };
   }, []);
-  
+
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -293,14 +293,14 @@ const ItemComponent = ({ user, accessToken }) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
-  const[singleitem,setSingleItem] =useState(null);
-  const viewItems = async(item) =>{
-    
+  const [singleitem, setSingleItem] = useState(null);
+  const viewItems = async (item) => {
+
     setSingleItem(item);
     setShowitemDetails(true);
   }
 
-  const edititem = async(item) =>{
+  const edititem = async (item) => {
     setShowitemDetails(false);
     setItemId(item.id);
     setFormData(item);
@@ -313,7 +313,7 @@ const ItemComponent = ({ user, accessToken }) => {
 
   return (
     <>
-    {loading && (
+      {loading && (
         <div className="loading-overlay">
           <div className="spinner"></div>
         </div>
@@ -334,8 +334,8 @@ const ItemComponent = ({ user, accessToken }) => {
                   {itemsPerPage}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start">
-                  <li><a class="dropdown-item"  onClick={()=>setItemsPerPage(20)}>20</a></li>
-                  <li><a class="dropdown-item"  onClick={()=>setItemsPerPage(50)}>50</a></li>
+                  <li><a class="dropdown-item" onClick={() => setItemsPerPage(20)}>20</a></li>
+                  <li><a class="dropdown-item" onClick={() => setItemsPerPage(50)}>50</a></li>
                 </ul>
               </div>
 
@@ -357,7 +357,7 @@ const ItemComponent = ({ user, accessToken }) => {
                 </ul>
               </div>
 
-              
+
 
               <button class="add-item btn btn-primary" id="openForm"><i class="bi bi-plus-circle"></i> Add Item</button>
             </div>
@@ -388,14 +388,14 @@ const ItemComponent = ({ user, accessToken }) => {
                     <label className="form-label">Category *</label>
                     <select name="category" className="form-select" value={formData.category} onChange={handleChange}>
                       <option value="">-- Select --</option>
-                      {categories.map((cat, index) => ( 
-                     <> <option key={index} value={cat.id}>{cat.name}</option>
-                     
-                      </>))}
+                      {categories.map((cat, index) => (
+                        <> <option key={index} value={cat.id}>{cat.name}</option>
+
+                        </>))}
                     </select>
                     {errors.category && <small className="text-danger">{errors.category}</small>}
                   </div>
-                  
+
                 </div>
 
                 <div className="row mb-3">
@@ -475,13 +475,13 @@ const ItemComponent = ({ user, accessToken }) => {
                     <label>CATEGORY</label>
                     <select name="category" className="form-select custom-select" value={filters.category} onChange={handleFilterChange}>
                       <option value="">--</option>
-                      {categories.map((cat, index) => ( 
-                     <> <option key={index} value={cat.id}>{cat.name}</option>
-                     
-                      </>))}
+                      {categories.map((cat, index) => (
+                        <> <option key={index} value={cat.id}>{cat.name}</option>
+
+                        </>))}
                     </select>
                   </div>
-                  
+
                 </div>
 
                 <div className="row mt-3">
@@ -523,8 +523,8 @@ const ItemComponent = ({ user, accessToken }) => {
           </div>
 
 
-
-          <table>
+          <div className="overflow-x-auto w-100">
+          <table  className="table w-full min-w-[600px]">
             <thead>
               <tr>
                 <th>Name</th>
@@ -546,68 +546,67 @@ const ItemComponent = ({ user, accessToken }) => {
                   <td className="border px-4 py-2">{item.is_featured}</td>
                   <td className="border px-4 py-2">{item.status}</td>
                   <td class="actions">
-                            <a onClick={()=>viewItems(item)} class="tooltip-container">
-                                <i class="fas fa-eye view"></i>
-                                <span class="tooltip-text">View</span>
-                            </a>
-                            <a onClick={()=>edititem(item)} id="editForm" class="tooltip-container">
-                                <i class="fas fa-edit edit"></i>
-                                <span class="tooltip-text">Edit</span>
-                            </a>
-                            <a class="tooltip-container">
-                                <i class="fas fa-trash delete"></i>
-                                <span class="tooltip-text">Delete</span>
-                            </a>
-                        </td>
+                    <a onClick={() => viewItems(item)} class="tooltip-container">
+                      <i class="fas fa-eye view"></i>
+                      <span class="tooltip-text">View</span>
+                    </a>
+                    <a onClick={() => edititem(item)} id="editForm" class="tooltip-container">
+                      <i class="fas fa-edit edit"></i>
+                      <span class="tooltip-text">Edit</span>
+                    </a>
+                    <a class="tooltip-container">
+                      <i class="fas fa-trash delete"></i>
+                      <span class="tooltip-text">Delete</span>
+                    </a>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
+          
           <div class="table-footer">
-          <span class="add-content">
-          Showing {startIndex + 1} to{" "}
-          {Math.min(startIndex + itemsPerPage, itemlist.length)} of{" "}
-          {itemlist.length} entries
-        </span>
+            <span class="add-content">
+              Showing {startIndex + 1} to{" "}
+              {Math.min(startIndex + itemsPerPage, itemlist.length)} of{" "}
+              {itemlist.length} entries
+            </span>
             <div className="flex justify-between items-center mt-4">
-       
 
-        <div className="flex space-x-2">
-          <button
-            className={`px-3 py-1 border rounded ${
-              currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            onClick={() => changePage(currentPage - 1)}
-          >
-            &laquo;
-          </button>
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              className={`px-3 py-1 border rounded ${
-                currentPage === i + 1 ? "bg-blue-500 text-white" : ""
-              }`}
-              onClick={() => changePage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-          <button
-            className={`px-3 py-1 border rounded ${
-              currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
-            }`}
-            onClick={() => changePage(currentPage + 1)}
-          >
-            &raquo;
-          </button>
-        </div>
-      </div>
+
+              <div className="flex space-x-2">
+                <button
+                  className={`px-3 py-1 border rounded ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  onClick={() => changePage(currentPage - 1)}
+                >
+                  &laquo;
+                </button>
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    className={`px-3 py-1 border rounded ${currentPage === i + 1 ? "bg-blue-500 text-white" : ""
+                      }`}
+                    onClick={() => changePage(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  className={`px-3 py-1 border rounded ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                  onClick={() => changePage(currentPage + 1)}
+                >
+                  &raquo;
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-    {showitemdetail &&  <ItemViewComponent  singleitem ={singleitem}/> }
-    
+      {showitemdetail && <ItemViewComponent singleitem={singleitem} />}
+
     </>
   )
 }
