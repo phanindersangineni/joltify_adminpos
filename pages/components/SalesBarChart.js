@@ -10,7 +10,11 @@ import {
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const SalesBarChart = ({ data }) => {
+const SalesBarChart = ({ data = [] }) => {
+  if (!Array.isArray(data) || data.length === 0) {
+    return <p>No sales data available.</p>; // optional fallback UI
+  }
+
   const labels = data.map(item => `${item.month}`);
   const amounts = data.map(item => item.payableamount);
 

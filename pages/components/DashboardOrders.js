@@ -19,7 +19,7 @@ const DashboardOrders =({user, accessToken}) =>{
           "X-Frame-Options": "SAMEORIGIN",
           token: accessToken,
         };
-        const response = await axios.get(`${DEV}/joltify/orders/search/N/${user.user_id}`, { headers });
+        const response = await axios.get(`${DEV}/joltify/orders/search/N/${user?.restaurantid}`, { headers });
         setOrderList(response.data.data);
      
     } 

@@ -1,136 +1,154 @@
+
 import axios from "axios";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
 const KitchenComponent = ({ user, accessToken }) => {
-
     const [orders, setOrders] = useState([]);
     const [dineinfilteredorders, setdineFilteredOrders] = useState([]);
     const [takeinfilteredorders, setTakeFilteredOrders] = useState([]);
-    const [droparray, setDroparray] = useState(['Preparing', 'Prepared', 'Done']);
+    const [droparray] = useState(['Preparing', 'Prepared', 'Done']);
     const [activeTab, setActiveTab] = useState('Accept');
-    const tabs = ['Accept', 'Preparing', 'Prepared', 'Done'];
     const [searchtext, setSearchText] = useState(null);
     const [itemCounts, setItemCounts] = useState([]);
+    const tabs = ['Accept', 'Preparing', 'Prepared', 'Done']; // <-- Add this
+    const intervalRef = useRef(null);
 
+    const lastAcceptOrderIds = useRef(new Set());
+    const [canPlayAudio, setCanPlayAudio] = useState(false);
+    const audioRef = useRef(null);
     useEffect(() => {
-        getOrders();
-
+        audioRef.current = new Audio("/notification.wav");
+    
+        const handleClick = () => {
+            setCanPlayAudio(true);
+            window.removeEventListener('click', handleClick);
+        };
+    
+        window.addEventListener('click', handleClick);
+    
+        getOrders(); // Initial call
+    
+        intervalRef.current = setInterval(() => {
+            getOrders();
+        }, 30000); // 10 seconds
+    
+        return () => {
+            clearInterval(intervalRef.current);
+            window.removeEventListener('click', handleClick);
+        };
     }, []);
 
-    const handleTabClick = async (tab) => {
-        setActiveTab(tab);
-        let filtered = orders.filter(item => item.orderstatus === tab
-            && item.ordertype === 'DINE-IN');
+    const getOrders = async () => {
+        const headers = {
+            "content-type": "application/json",
+            token: accessToken,
+        };
 
-        let filtered1 = orders.filter(item => item.orderstatus === tab
-            && item.ordertype === 'TAKEAWAY');
+        try {
+            const response = await axios.get(`${DEV}/joltify/orders/search/N/${user?.restaurantid}`, { headers });
+            const allOrders = response?.data?.data || [];
+
+            // Track new "Accept" orders by order ID
+            const currentAcceptOrders = allOrders.filter(order =>
+                String(order.orderstatus).toUpperCase().trim() === "ACCEPT"
+            );
+
+            const currentIds = new Set(currentAcceptOrders.map(order => order.orderid));
+            const previousIds = lastAcceptOrderIds.current || new Set();
+
+            // Check for new Accept order IDs not in previous fetch
+            const newOrderFound = [...currentIds].some(id => !previousIds.has(id));
+             
+            console.log("newOrderFound"+newOrderFound);
+            console.log("canPlayAudio"+canPlayAudio);
+            
+            if (newOrderFound  && audioRef.current) {
+                audioRef.current.play().catch(err => console.log('Audio play blocked:', err));
+            }
+
+            lastAcceptOrderIds.current = currentIds;
+
+            setOrders(allOrders);
+            filterOrders(allOrders, activeTab, searchtext);
+
+            // Count items (excluding completed, cancelled, delivered)
+            const itemCountMap = {};
+            allOrders
+                .filter(order => {
+                    const status = String(order.orderstatus).toUpperCase().trim();
+                    return !['COMPLETED', 'CANCELLED', 'DELIVERED'].includes(status);
+                })
+                .forEach(order => {
+                    order.items.forEach(item => {
+                        const itemName = item.name;
+                        itemCountMap[itemName] = (itemCountMap[itemName] || 0) + 1;
+                    });
+                });
+
+            const itemCountsArray = Object.entries(itemCountMap).map(([name, count]) => ({
+                name,
+                count
+            }));
+
+            setItemCounts(itemCountsArray);
+
+        } catch (error) {
+            console.error("Error fetching orders:", error);
+        }
+    };
+
+
+    const filterOrders = (allOrders, tab, search) => {
+        let filtered = allOrders.filter(item =>
+            item.orderstatus === tab && item.ordertype === 'DINE-IN'
+        );
+
+        let filtered1 = allOrders.filter(item =>
+            item.orderstatus === tab && item.ordertype === 'TAKEAWAY'
+        );
+
+        if (search) {
+            filtered = filtered.filter(item => item.orderid.includes(search));
+            filtered1 = filtered1.filter(item => item.orderid.includes(search));
+        }
 
         setdineFilteredOrders(filtered);
         setTakeFilteredOrders(filtered1);
-
     };
 
-    const searchorder = async (orderid) => {
+    const handleTabClick = (tab) => {
+        setActiveTab(tab);
+        filterOrders(orders, tab, searchtext);
+    };
+
+    const searchorder = (orderid) => {
         setSearchText(orderid);
-        if (orderid) {
-            let filtered = orders.filter(item => item.orderid === orderid
-                && item.ordertype === 'DINE-IN');
-
-            let filtered1 = orders.filter(item => item.orderid === orderid
-                && item.ordertype === 'TAKEAWAY');
-
-            setdineFilteredOrders(filtered);
-            setTakeFilteredOrders(filtered1);
-        } else {
-            let filtered = orders.filter(item => item.orderstatus === 'Accept'
-                && item.ordertype === 'DINE-IN');
-            console.log(filtered);
-
-            let filtered1 = orders.filter(item => item.orderstatus === 'Accept'
-                && item.ordertype === 'TAKEAWAY');
-            setdineFilteredOrders(filtered);
-            setTakeFilteredOrders(filtered1);
-        }
-
-    }
+        filterOrders(orders, activeTab, orderid);
+    };
 
     const handleStatusChange = async (newStatus, orderid) => {
-        //setStatus(newStatus);
-        console.log('Selected status:', newStatus);
-
         const headers = {
             "content-type": "application/json",
-            "X-Content-Type-Options": "nosniff",
-            "X-Frame-Options": "SAMEORIGIN",
             token: accessToken,
         };
 
-        const response = await axios.get(`${DEV}/joltify/orders/update/${orderid}/${newStatus}`, { headers });
+        try {
+            const response = await axios.get(`${DEV}/joltify/orders/update/${orderid}/${newStatus}`, { headers });
 
-        if (response.data.data == 'SUCCESS') {
-            getOrders();
+            if (response.data.data === 'SUCCESS') {
+                getOrders();
+            }
+        } catch (error) {
+            console.error("Error updating status:", error);
         }
-
     };
-
-    const getOrders = async () => {
-
-        const headers = {
-            "content-type": "application/json",
-            "X-Content-Type-Options": "nosniff",
-            "X-Frame-Options": "SAMEORIGIN",
-            token: accessToken,
-        };
-
-        const response = await axios.get(`${DEV}/joltify/orders/search/N/${user.user_id}`, { headers });
-        console.log(response.data.data);
-        let filtered = response.data.data.filter(item => item.orderstatus === 'Accept'
-            && item.ordertype === 'DINE-IN');
-        console.log(filtered);
-
-        let filtered1 = response.data.data.filter(item => item.orderstatus === 'Accept'
-            && item.ordertype === 'TAKEAWAY');
-        setOrders(response?.data?.data);
-        setdineFilteredOrders(filtered);
-        setTakeFilteredOrders(filtered1);
-
-        const itemCountMap = {};
-
-        response?.data?.data.forEach(order => {
-            order.items.forEach(item => {
-                const itemName = item.name;
-
-                if (itemCountMap[itemName]) {
-                    itemCountMap[itemName]++;
-                } else {
-                    itemCountMap[itemName] = 1;
-                }
-            });
-        });
-
-        const itemCountsArray = Object.entries(itemCountMap).map(([name, count]) => ({
-            name,
-            count
-        }));
-
-        setItemCounts(itemCountsArray);
-
-    }
 
     function formatteddate(frdate) {
         try {
-            const date = new Date(frdate); // The given date
-
-            let timezone = 'Asia/Kolkata';
-            let z = 'en-IN';
-            /*if (localStorage.getItem('language') == 'en') {
-                timezone = 'Asia/Kolkata';
-                z = 'en-IN';
-            }*/
-
-            // Format the date using Intl.DateTimeFormat
+            const date = new Date(frdate);
             const options = {
                 weekday: 'long',
                 year: 'numeric',
@@ -139,39 +157,36 @@ const KitchenComponent = ({ user, accessToken }) => {
                 hour: 'numeric',
                 minute: 'numeric',
                 second: 'numeric',
-                timeZoneName: 'short',  // This will show the timezone abbreviation
-                timeZone: timezone  // Set to IST
+                timeZoneName: 'short',
+                timeZone: 'Asia/Kolkata',
             };
 
-            const formattedDate = new Intl.DateTimeFormat(z, options).format(
-                date
-            );
-
-            return formattedDate;
+            return new Intl.DateTimeFormat('en-IN', options).format(date);
         } catch (e) {
             return null;
         }
     }
 
+
     return (
         <section class="kds">
             <div class="header">
-             <span class="text-secondary"> <Link href ="/orders"> Orders</Link></span>
-        </div>
+                <span class="text-secondary"> <Link href="/orders"> Orders</Link></span>
+            </div>
             <div class="section3">
                 <div class="left">
                     <div class="card">
                         <div class="top"><h3>Items Board</h3></div>
                         <div class="bottom">
-                        {itemCounts.map((item) => (
-                          <> <div>
-                                <p>{item.name}</p>
-                                
-                            </div>
-                            <p class="count">{item.count}</p>
-                            </>))}
+                            {itemCounts.map((item) => (
+                                <> <div>
+                                    <p>{item.name}</p>
+
+                                </div>
+                                    <p class="count">{item.count}</p>
+                                </>))}
                         </div>
-                        
+
 
 
                     </div>

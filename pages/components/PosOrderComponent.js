@@ -19,7 +19,7 @@ const PosOrderComponent =({user, accessToken}) =>{
           "X-Frame-Options": "SAMEORIGIN",
           token: accessToken,
         };
-        const response = await axios.get(`${DEV}/joltify/orders/search/N/${user.user_id}`, { headers });
+        const response = await axios.get(`${DEV}/joltify/orders/search/N/${user?.restaurantid}`, { headers });
         setOrderList(response.data.data);
      
     } 
@@ -168,6 +168,7 @@ const PosOrderComponent =({user, accessToken}) =>{
                         <th>Table No</th>
                         <th>Customer</th>
                         <th>Amount</th>
+                        <th>Tip</th>
                         <th>Date</th>
                         <th>Status</th>
                         <th>Action</th>
@@ -182,6 +183,7 @@ const PosOrderComponent =({user, accessToken}) =>{
                         
                         <td>{item.name}-{item.mobileno}</td>
                         <td>${item.total}</td>
+                        <td>${item.tip}</td>
                         <td>{formatteddate(item.orderdate)}</td>
                         <td><span class="status">{item.orderstatus}</span></td>
                         <td class="actions">

@@ -71,7 +71,8 @@ const RestaurantComponent = ({ user, accessToken }) => {
     email: "",
     address: "",
     description: "",
-    status: ""
+    status: "",
+    keyname:""
   });
 
   const handleFilterChange = (e) => {
@@ -104,6 +105,7 @@ const RestaurantComponent = ({ user, accessToken }) => {
       mobileno: null,
       email: null,
       status: null,
+      keyname:null
     });
 
     setFilteredItems(items);
@@ -115,7 +117,8 @@ const RestaurantComponent = ({ user, accessToken }) => {
     email: "",
     address: "",
     status: "active",
-    description: ""
+    description: "",
+    keyname:""
 
   });
 
@@ -139,7 +142,8 @@ const RestaurantComponent = ({ user, accessToken }) => {
     if (!formData.email.trim()) newErrors.email = "Email is required.";
     if (!formData.description.trim()) newErrors.description = "Description is required.";
     if (filedata == null && itempic == null) newErrors.filename = "Please upload file"
-
+    if (!formData.keyname.trim()) newErrors.keyname = "Restaurant unique key name is required.";
+  
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -167,7 +171,7 @@ const RestaurantComponent = ({ user, accessToken }) => {
       const newFile = new File([filedata], newFileName, { type: filedata.type });
       const formData1 = new FormData();
       formData1.append("file", newFile);
-      const fileresponse = await axios.post(`${DEV}/items/upload`, formData1, {
+      const fileresponse = await axios.post(`${DEV}/joltify/items/upload`, formData1, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if (fileresponse.data.status == 'success') {
@@ -190,7 +194,8 @@ const RestaurantComponent = ({ user, accessToken }) => {
           address: formData.address,
           status: formData.status,
           description: formData.description,
-          image: newFileName
+          image: newFileName,
+          keyname:formData.keyname
 
         }
         // Simulating API call
@@ -313,7 +318,7 @@ const RestaurantComponent = ({ user, accessToken }) => {
   const edititem = async (item) => {
     setItemId(item.id);
     setNormalimage(item.image);
-    setItemPic(`${DEV}/items/files/${item.image}`);
+    setItemPic(`${DEV}/joltify/items/files/${item.image}`);
    
     setFormData(item);
     const openButton = document.getElementById("editForm");
@@ -443,7 +448,7 @@ const RestaurantComponent = ({ user, accessToken }) => {
 
                     <img src={itempic} alt="slider" />
                   </div> <br /></>} 
-                  <div className="col-md-6">
+                  <div className="col-md-9">
                     <label className="form-label">Description</label>
                     <textarea name="description"
                       className="form-control" value={formData.description}
@@ -452,8 +457,19 @@ const RestaurantComponent = ({ user, accessToken }) => {
 
                   </div>
 
+                 
+
 
                 </div>
+
+                <div className="col-md-6">
+                    <label className="form-label">Restaurant unique key *</label>
+                   
+                    <input type="text" name="keyname" className="form-control"
+                      value={formData.keyname} onChange={handleChange} />
+                    {errors.keyname && <small className="text-danger">{errors.keyname}</small>}
+                    <br></br>
+                    </div> 
 
 
                 <div className="col-md-12 d-flex align-items-end">
@@ -466,7 +482,8 @@ const RestaurantComponent = ({ user, accessToken }) => {
                     email: "",
                     address: "",
                     status: "active",
-                    description: ""
+                    description: "",
+                    keyname:""
 
                   })}>
                     <i className="bi bi-x-circle"></i> Clear
@@ -542,10 +559,7 @@ const RestaurantComponent = ({ user, accessToken }) => {
                   <td className="border px-4 py-2">{item.address}</td>
                   <td className="border px-4 py-2">{item.status}</td>
                   <td class="actions">
-                    <a onClick={() => viewItems(item)} class="tooltip-container">
-                      <i class="fas fa-eye view"></i>
-                      <span class="tooltip-text">View</span>
-                    </a>
+                   
                     <a onClick={() => edititem(item)} id="editForm" class="tooltip-container">
                       <i class="fas fa-edit edit"></i>
                       <span class="tooltip-text">Edit</span>

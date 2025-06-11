@@ -115,7 +115,7 @@ const PosComponent = ({ user, accessToken }) => {
                 };
                 // const response = await fetch(`http://localhost:3000/customers/search?name=${searchTerm}`);
                 //const data = await response.json();
-                const response = await axios.get(`${DEV}/joltify/customers/search/${searchTerm}/${user.user_id}`, { headers });
+                const response = await axios.get(`${DEV}/joltify/customers/search/${searchTerm}/${user.restaurantid}`, { headers });
                 setCustomers(response.data.data);
             } catch (error) {
                 console.error("Error fetching customers:", error);
@@ -191,20 +191,46 @@ const PosComponent = ({ user, accessToken }) => {
 
                             {filteredlist?.map((item, index) => (
                                 <div key={index} class="items-card">
-                                    {item?.image && <div class="item-image">
-                                        <img src={`${DEV}/items/files/${item?.image}`} alt="Chicken Dumplings" />
+                                    {/* {item?.image && <div class="item-image">
+                                        <img src={`${DEV}/joltify/items/files/${item?.image}`} alt="Chicken Dumplings" />
                                     </div>}
 
                                     {!item?.image && <div class="item-image">
                                         <img src="/assets/images/chicken_dumplings-thumb.png" alt="Chicken Dumplings" />
-                                    </div>}
-                                    <div class="item-info">
+                            </div>} */}
+                                    {/*    <div class="item-info">
                                         <h6>{item?.name}</h6>
                                         <div class="buttons">
                                             <span class="price">$ {item?.price}</span>
-                                            <a href="#" onClick={() => openItemPopup('additems', item)} class="add-button" id="openadditems"><i class="bi bi-cart4"></i> Add</a>
+                                            <a href="#"
+                                             onClick={() => openItemPopup('additems', item)} 
+                                             class="add-button" id="openadditems">
+                                                <i class="bi bi-cart4"></i> Add</a>
+                                        </div>
+                        </div>*/}
+
+                                    <div
+                                        onClick={() => openItemPopup('additems', item)}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                                openItemPopup('additems', item);
+                                            }
+                                        }}
+                                       class="buttons"
+                                    >
+                                        <div className="item-info">
+                                            <h6>{item?.name}</h6>
+                                            <div className="buttons">
+                                                <span className="price">$ {item?.price}</span>
+                                                
+                                            </div>
                                         </div>
                                     </div>
+
+
+
                                 </div>
                             ))}
 

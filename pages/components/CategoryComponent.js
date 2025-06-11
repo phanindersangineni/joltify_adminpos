@@ -137,6 +137,7 @@ const CategoryComponent = ({user,accessToken}) => {
   const handleFileChange = async (event) => {
     event.preventDefault();
     const file = event.target.files[0]
+    setItemPic(null);
     setFileData(file);
   }
 
@@ -158,7 +159,7 @@ const CategoryComponent = ({user,accessToken}) => {
       const newFile = new File([filedata], newFileName, { type: filedata.type });
       const formData1 = new FormData();
       formData1.append("file", newFile);  
-      const fileresponse = await axios.post(`${DEV}/items/upload`, formData1, {
+      const fileresponse = await axios.post(`${DEV}/joltify/items/upload`, formData1, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       if(fileresponse.data.status =='success'){
@@ -297,7 +298,7 @@ const CategoryComponent = ({user,accessToken}) => {
   const edititem = async(item) =>{
     setItemId(item.id);
     setFormData(item);
-    setItemPic(`${DEV}/items/files/${item.image}`);
+    setItemPic(`${DEV}/joltify/items/files/${item.image}`);
     const openButton = document.getElementById("editForm");
     const closeButton = document.getElementById("closeForm");
     const formContainer = document.getElementById("formContainer");

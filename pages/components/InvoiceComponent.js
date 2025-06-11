@@ -104,7 +104,7 @@ const applydiscount =() =>{
   let newtotal = Math.ceil(parseFloat(finalprice) -parseFloat(discountss));
   setDiscountTotal(discountss);
   setTotal(newtotal);
-  let tax = Math.ceil(4 /100 * parseFloat(finalprice));
+  let tax = Math.ceil(8.5 /100 * parseFloat(finalprice));
    setTax(tax);
    let payable = parseFloat(newtotal) +parseFloat(tax);
    setPayable(payable);
@@ -168,7 +168,7 @@ const reloadcartprice =() =>{
    setSubtotal(finalprice);
    
    setTotal(finalprice);
-   let tax = Math.ceil(4 /100 * parseFloat(finalprice));
+   let tax = Math.ceil(8.5 /100 * parseFloat(finalprice));
    setTax(tax);
    let payable = parseFloat(finalprice) +parseFloat(tax);
    setPayable(payable);
@@ -250,7 +250,7 @@ const reloadcartprice =() =>{
             </td>
           </tr>
           <tr>
-            <td className="items-name">Tax(4 %)</td>
+            <td className="items-name">Tax(8.5 %)</td>
             <td></td>
             <td className="items-price">$ {tax}</td>
           </tr>

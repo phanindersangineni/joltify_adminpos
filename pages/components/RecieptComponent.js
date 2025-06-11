@@ -85,7 +85,7 @@ const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction,quantity}
       token: accessToken,
     };
     
-    const response = await axios.get(`${DEV}/joltify/orders/search/${orderid}/${user.user_id}`, { headers });
+    const response = await axios.get(`${DEV}/joltify/orders/search/${orderid}/${user?.restaurantid}`, { headers });
     console.log(response);
     setOrder(response?.data?.data[0]);
     setItems(response?.data?.data[0]?.items);
@@ -166,12 +166,16 @@ const RecieptComponent = ({user,accessToken,orderid,closeReceiptAction,quantity}
             Discount: <span className="float-end">$ {order?.discount}</span>
           </p>
           <p>
-            Total Tax: <span className="float-end">$ {order?.tax}</span>
-          </p>
-          <p>
             <strong>
               Total: <span className="float-end">$ {order?.total}</span>
             </strong>
+          </p>
+          <p>
+            Total Tax (8.5%): <span className="float-end">$ {order?.tax}</span>
+          </p>
+          
+          <p>
+            Tip: <span className="float-end">$ {order?.tip}</span>
           </p>
           <p>
             <strong>

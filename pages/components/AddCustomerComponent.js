@@ -46,7 +46,7 @@ const AddCustomerComponent = ({user, accessToken ,customerAction,closeCustomerAc
               };
 
               const addcutomerdata ={
-                createdby:user.user_id,
+                createdby:user.restaurantid,
                 name:formData.name,
                 phone:formData.phone
               }

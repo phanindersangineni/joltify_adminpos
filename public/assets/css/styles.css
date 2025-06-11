@@ -2039,6 +2039,96 @@
     }
 }
 
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(8px); /* This applies the blur */
+    background-color: rgba(0, 0, 0, 0.3); /* Optional dark overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+.popup-changepassword {
+    background: white;
+    border-radius: 8px;
+    width: 50%;
+    position: relative;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+
+     
+    .header {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(167, 165, 165, 0.377);
+        padding: 10px 20px;
+        align-items: center;
+
+
+        .close {
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #007BFF;
+        }
+    }
+
+
+    form {
+        
+        gap: 15px;
+        padding: 15px;
+        align-items: center;
+    }
+
+    .form-group {
+        display: block;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .full-width {
+        width: 100%;
+    }
+
+    label {
+        margin-bottom: 5px;
+        color: #6e6e6e;
+        font-weight: 500;
+    }
+
+    input,
+    select,
+    textarea {
+        padding: 8px 15px;
+        width: 100%;
+        border: 1px solid #ccccccc4;
+        border-radius: 5px;
+    }
+
+    .radio-group {
+        display: flex;
+        align-items: center;
+        gap: 1px;
+    }
+
+    .btn {
+        padding: 5px 13px;
+        font-size: 14px;
+
+        i {
+            margin-right: 5px;
+        }
+    }
+}
+
+
 .pos .payment-modal {
     .order {
 
@@ -2233,6 +2323,8 @@
         }
     }
 }
+
+
 
 
 .pos .receiptpopup {

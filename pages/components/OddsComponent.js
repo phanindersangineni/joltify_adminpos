@@ -8,9 +8,17 @@ const OddsComponent =({user, accessToken}) =>{
     const [doneorders, setDoneOrder] = useState([]);
   
     useEffect(() => {
+        // Call immediately once
         getOrders();
-
-    }, []);
+      
+        // Set interval to call every 30 seconds
+        const intervalId = setInterval(() => {
+          getOrders();
+        }, 30000); // 30000 ms = 30 seconds
+      
+        // Cleanup on component unmount
+        return () => clearInterval(intervalId);
+      }, []);
 
     const getOrders = async () => {
 
@@ -21,7 +29,7 @@ const OddsComponent =({user, accessToken}) =>{
             token: accessToken,
         };
 
-        const response = await axios.get(`${DEV}/joltify/orders/search/N/${user.user_id}`, { headers });
+        const response = await axios.get(`${DEV}/joltify/orders/search/N/${user?.restaurantid}`, { headers });
         console.log(response.data.data);
         let filtered = response.data.data.filter(item => item.orderstatus === 'Preparing'
             );

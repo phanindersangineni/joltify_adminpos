@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";;
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -8,7 +8,7 @@ const AddPaymentComponent = ({ openReceiptAction,
     selectedCustomer, selectedTable, orderType, paymentamount,user,
     accessToken,closepaymentAction }) => {
     const { cart, cartitems, removecart } = useAuth();
-   
+    console.log(paymentamount);
     const [selectedMethod, setSelectedMethod] = useState(null); // Default is no selection
     const [recievedamount,setRecievedAmount] =useState(0);
     const handlePaymentSelect = (method) => {
@@ -17,6 +17,36 @@ const AddPaymentComponent = ({ openReceiptAction,
 
     const closepayment =() =>{
         closepaymentAction('payment');
+    }
+    const[payable,setPayable] =useState(paymentamount?.payable);
+
+
+    useEffect(() => {
+
+        //loadtabledata();
+       setAmount();
+    
+    }, [paymentamount?.payable]);
+    
+    const setAmount =() =>{
+        setPayable(paymentamount?.payable);
+        
+        setTip(0);
+        setTipdisplay(null);
+    }
+
+    const[tip,setTip] =useState(0);
+    const[tipdisplay,setTipdisplay] =useState(null);
+    const handleTipSelect =(val) =>{
+        let total =paymentamount.total;
+        let tip = Math.ceil(val /100 * parseFloat(total));
+        console.log(tip);
+        let payableA = parseFloat(paymentamount?.payable) +parseFloat(tip);
+        console.log(payableA);
+        setPayable(payableA);
+        //let dis = tip+ `$(${val})`;
+        setTipdisplay(val);
+        setTip(tip);
     }
 
     const openreceipt = async() => {
@@ -36,16 +66,18 @@ const AddPaymentComponent = ({ openReceiptAction,
             mobileno:selectedCustomer,
             ordertype: orderType,
             tableno: selectedTable,
-            payableamount: paymentamount.payable,
+            payableamount: payable,
             subtotal: paymentamount.subtotal,
             discount: paymentamount.discounttotal,
             paymenttype: selectedMethod,
             discounttype: "PERCENTAGE",
             customertype:'POS',
-            createdby:user.user_id,
+            createdby:user.userid,
             tax:paymentamount.tax,
             total:paymentamount.total,
-            orderstatus:'Accept'
+            orderstatus:'Accept',
+            restaurantid:user.restaurantid,
+            tip:tip
 
         }
 
@@ -81,13 +113,35 @@ const AddPaymentComponent = ({ openReceiptAction,
                     <h5>Payments</h5>
                     <span class="close" onClick={closepayment}><i class="bi bi-x-circle text-danger"></i></span>
                 </div>
-                <div class="totalamount">
+               {payable && <div class="totalamount">
                     <p>Total Amount</p>
-                    <div class="amount">$ {paymentamount?.payable}</div>
+                    <div class="amount">$ {payable}</div>
+                </div> }
+
+                <div class="totalamount">
+                <h5>Select Tip ({tipdisplay} %) : $ {tip}  </h5>
+                </div>
+                
+                <div class="payment-methods">
+                    
+                    <button onClick={() => handleTipSelect(15)}>
+                        <i className="bi bi-cash-coin"></i> (15 %)
+                    </button>
+                    <button onClick={() => handleTipSelect(20)}>
+                        <i className="bi bi-cash-coin"></i> (20 %)
+                    </button>
+                    <button onClick={() => handleTipSelect(25)}>
+                        <i className="bi bi-cash-coin"></i> (25 %)
+                    </button>
+                    <button onClick={() => handleTipSelect(0)}>
+                        <i className="bi bi-cash-coin"></i> Skip
+                    </button>
+                   
                 </div>
                 <div class="totalamount">
                 <h5>Select Payment Method : {selectedMethod}</h5>
                 </div>
+
                 <div class="payment-methods">
                     
                     <button onClick={() => handlePaymentSelect("Cash")}>

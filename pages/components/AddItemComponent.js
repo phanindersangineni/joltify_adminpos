@@ -191,7 +191,8 @@ const AddItemComponent = ({ closeActionItem, item, openInvoiceAction,quantity })
             <div class="popup-additems">
                 <div class="items-header">
                     <div class="left">
-                        <img src="/assets/images/chicken_dumplings-thumb.png" alt="" />
+                    {/*    <img src="/assets/images/chicken_dumplings-thumb.png"
+                         alt="" />*/}
                         <div class="itemname">
                             <h6>{item?.name} <i class="bi bi-exclamation-circle-fill text-secondary fs-6"></i></h6>
                             <p>{item?.description}</p>

@@ -8,7 +8,7 @@ export const DEV = process.env.NEXT_PUBLIC_API_URL;
 const ItemViewComponent = ({ singleitem }) => {
   const [activePopup, setActivePopup] = useState(null);
   const fileInputRef = useRef(null);
-  const [itempic, setItemPic] = useState(`${DEV}/items/files/${singleitem?.image}`);
+  const [itempic, setItemPic] = useState(`${DEV}/joltify/items/files/${singleitem?.image}`);
   const [formData, setFormData] = useState({ name: "", price: "", attributes: "", status: "active" });
   const [variantlist, setVarianList] = useState([]);
   const [extralist, setExtraList] = useState([]);
@@ -32,7 +32,7 @@ const ItemViewComponent = ({ singleitem }) => {
 
   useEffect(() => {
 
-    setItemPic(`${DEV}/items/files/${singleitem.image}`);
+    setItemPic(`${DEV}/joltify/items/files/${singleitem.image}`);
 
     if (singleitem.variants != null) {
       setVarianList(singleitem.variants);
@@ -119,7 +119,7 @@ const ItemViewComponent = ({ singleitem }) => {
 
       try {
         // Upload the file to the server
-        const response = await axios.post(`${DEV}/items/upload`, formData, {
+        const response = await axios.post(`${DEV}/joltify/items/upload`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         console.log(response.data.status);
@@ -127,7 +127,7 @@ const ItemViewComponent = ({ singleitem }) => {
         if (response.data.status == 'success') {
           //  const fileUrl = `${APIs.development.viewupload}${newFileName}?timestamp=${new Date().getTime()}`;
 
-          const fileUrl = `${DEV}/items/files/${newFileName}`;
+          const fileUrl = `${DEV}/joltify/items/files/${newFileName}`;
           setItemPic(fileUrl);
 
           const saveredata = {
@@ -608,6 +608,7 @@ const ItemViewComponent = ({ singleitem }) => {
                         <option value="">--</option>
                         <option value="Size">Size</option>
                         <option value="Quantity">Quantity</option>
+                        <option value="Spice Level">Spice Level</option>
                       </select>
                     </div>
                   </>

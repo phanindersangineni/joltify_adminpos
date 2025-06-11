@@ -70,7 +70,7 @@ const Menu = ({user, accessToken,categoryClickAction}) => {
         </div>
         {categories.map((cat, index) => ( 
         <div key={index} className="menu-item" onClick={()=>loaditemsbycategory(cat)}>
-          <img src={`${DEV}/items/files/${cat.image}`} alt="Appetizers" />
+          <img src={`${DEV}/joltify/items/files/${cat.image}`} alt="Appetizers" />
           <p>{cat.name}</p>
         </div>
         ))}

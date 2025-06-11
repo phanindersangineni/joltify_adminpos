@@ -1,11 +1,26 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";;
 import { useRouter } from "next/router";
+import ChangePasswordComponent from "./ChangePasswordComponent";
 
 const NavBarComponent = ({ toggleSidebar }) => {
   const { user,logout } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    document.getElementById('changepassword').style.display = 'none';
+
+}, []);
+
+  function openPopup(popupId) {
+
+    document.getElementById(popupId).style.display = "flex";
+}
+
+function closemodal(popupId) {
+  document.getElementById(popupId).style.display = 'none';
+}
 
   const logoutUser =() =>{
     logout();
@@ -15,6 +30,11 @@ const NavBarComponent = ({ toggleSidebar }) => {
     <>
       <nav className="navbar navbar-expand-lg navbar-light bg-white fixed-top">
         <div className="container-fluid">
+        <div class="add-customer  " id="changepassword" >
+                    <ChangePasswordComponent 
+                        closeCustomerAction={closemodal} 
+                         />
+                </div>
           <a className="navbar-brand fw-bold px-2" href="#">
             <img src="/assets/images/logo.png" alt="" width="180px" />
           </a>
@@ -36,12 +56,16 @@ const NavBarComponent = ({ toggleSidebar }) => {
                 <li>
                   <hr className="dropdown-divider" />
                 </li>
-                <li><a className="dropdown-item" href="#"><i className="fas fa-key me-2"></i> Change Password</a></li>
-                <li><a className="dropdown-item text-danger" href="" onClick={logoutUser}><i className="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                <li><a className="dropdown-item" href="#" onClick={() => 
+                   openPopup('changepassword')}>
+                  <i className="fas fa-key me-2"></i> Change Password</a></li>
+                <li><a className="dropdown-item text-danger" href=""
+                 onClick={logoutUser}><i className="fas fa-sign-out-alt me-2"></i> Logout</a></li>
               </ul>
             </div>
           </div>
         </div>
+       
       </nav>
     </>
   );

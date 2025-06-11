@@ -30,7 +30,7 @@ const OrdedetailsComponent = ({ user, accessToken }) => {
       token: accessToken,
     };
 
-    const response = await axios.get(`${DEV}/joltify/orders/search/${orderid}/${user.user_id}`, { headers });
+    const response = await axios.get(`${DEV}/joltify/orders/search/${orderid}/${user?.restaurantid}`, { headers });
     console.log(response);
     setOrder(response.data.data[0]);
     setItems(response.data.data[0].items);
