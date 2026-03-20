@@ -191,7 +191,7 @@ const AddItemComponent = ({ closeActionItem, item, openInvoiceAction,quantity })
             <div class="popup-additems">
                 <div class="items-header">
                     <div class="left">
-                    {/*    <img src="/assets/images/chicken_dumplings-thumb.png"
+                    {/*    <img src="/admin/assets/images/chicken_dumplings-thumb.png"
                          alt="" />*/}
                         <div class="itemname">
                             <h6>{item?.name} <i class="bi bi-exclamation-circle-fill text-secondary fs-6"></i></h6>
@@ -264,7 +264,7 @@ const AddItemComponent = ({ closeActionItem, item, openInvoiceAction,quantity })
                 {/*<div class="addon">
                     <h6>Addons</h6>
                     <div class="addons-details">
-                        <img src="/assets/images/chicken_dumplings-thumb.png" alt="" />
+                        <img src="/admin/assets/images/chicken_dumplings-thumb.png" alt="" />
                         <div class="addons-itemsdetails">
                             <div class="addons-itemname">
                                 <p>Soda (can)</p>

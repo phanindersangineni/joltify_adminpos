@@ -65,7 +65,7 @@ const Menu = ({user, accessToken,categoryClickAction}) => {
       )}
       <div className="menu-items" id="menu" ref={menuRef} style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
         <div className="menu-item active" onClick={()=>loaditemsbycategory({id:0})}>
-          <img src="/assets/images/all-category.png" alt="All Items" />
+          <img src="/admin/assets/images/all-category.png" alt="All Items" />
           <p>All Items</p>
         </div>
         {categories.map((cat, index) => ( 

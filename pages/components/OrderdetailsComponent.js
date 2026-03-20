@@ -242,7 +242,7 @@ const OrdedetailsComponent = ({ user, accessToken }) => {
                   <div className="left">
                     <span>{item.quantity}</span>
                     <img
-                      src="/assets/images/all-category.png"
+                      src="/admin/assets/images/all-category.png"
                       alt="burger"
                     />
                   </div>
@@ -297,7 +297,7 @@ const OrdedetailsComponent = ({ user, accessToken }) => {
               </div>
 
               <div className="profile">
-                <img src="/assets/images/profile.png" alt="profile" />
+                <img src="/admin/assets/images/profile.png" alt="profile" />
                 <h6>{order.customername}</h6>
               </div>
               <div className="contact-details">

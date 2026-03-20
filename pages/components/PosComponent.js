@@ -196,7 +196,7 @@ const PosComponent = ({ user, accessToken }) => {
                                     </div>}
 
                                     {!item?.image && <div class="item-image">
-                                        <img src="/assets/images/chicken_dumplings-thumb.png" alt="Chicken Dumplings" />
+                                        <img src="/admin/assets/images/chicken_dumplings-thumb.png" alt="Chicken Dumplings" />
                             </div>} */}
                                     {/*    <div class="item-info">
                                         <h6>{item?.name}</h6>

@@ -53,7 +53,7 @@ const Orders =() =>{
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         />
-        <link rel="stylesheet" href="/assets/css/styles.css" />
+        <link rel="stylesheet" href="/admin/assets/css/styles.css" />
       </Head>
 
       <NavBarComponent toggleSidebar={toggleSidebar}/>

@@ -5,7 +5,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Swal from "sweetalert2";
-// import logo from '../public/assets/images/logo.png'
+// import logo from '../public/admin/assets/images/logo.png'
 
 export const DEV = process.env.NEXT_PUBLIC_API_URL;
 
@@ -125,14 +125,14 @@ export default function Home() {
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
         />
-        <link rel="stylesheet" href="/assets/css/login.css" />
+        <link rel="stylesheet" href="/admin/assets/css/login.css" />
       </Head>
 
       <div className="container">
 
         <div className="login-box">
           <div className="">
-            <img src='/assets/images/logo.png'></img>
+            <img src='/admin/assets/images/logo.png'></img>
           </div>
           <h2>Welcome Back</h2>
           <form onSubmit={handleSubmit}>
